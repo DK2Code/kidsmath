@@ -1625,6 +1625,87 @@ const saveTheme = (theme) => {
   try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* storage unavailable */ }
 };
 
+// --- Mascot mapping: Default theme = Owl, Pokemon theme = Pikachu ---------
+// Centralized so future theme-specific mascots are easy to add.
+const OWL_EMOJI = '🦉';
+const PIKACHU_SVG =
+  '<svg class="pika-mascot" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pikachu mascot" focusable="false">' +
+  '<path d="M15 24 L4 3 L21 15 Z" fill="#FFCB05" stroke="#6b4e00" stroke-width="2" stroke-linejoin="round"/>' +
+  '<path d="M49 24 L60 3 L43 15 Z" fill="#FFCB05" stroke="#6b4e00" stroke-width="2" stroke-linejoin="round"/>' +
+  '<path d="M9 9 L4 3 L13 8 Z" fill="#3a2b00"/>' +
+  '<path d="M55 9 L60 3 L51 8 Z" fill="#3a2b00"/>' +
+  '<circle cx="32" cy="37" r="22" fill="#FFCB05" stroke="#6b4e00" stroke-width="2"/>' +
+  '<circle cx="19" cy="43" r="5" fill="#EE1515"/>' +
+  '<circle cx="45" cy="43" r="5" fill="#EE1515"/>' +
+  '<circle cx="24" cy="33" r="4.2" fill="#1a1a1a"/>' +
+  '<circle cx="40" cy="33" r="4.2" fill="#1a1a1a"/>' +
+  '<circle cx="25.6" cy="31.4" r="1.5" fill="#fff"/>' +
+  '<circle cx="41.6" cy="31.4" r="1.5" fill="#fff"/>' +
+  '<path d="M29 39 Q32 42 35 39" fill="none" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round"/>' +
+  '</svg>';
+
+// Inner artwork for the large hero mascot SVG (shares the owl's 0 0 260 260 viewBox).
+const PIKACHU_HERO_INNER =
+  '<path d="M88 70 L60 8 L112 52 Z" fill="#FFCB05" stroke="#6b4e00" stroke-width="4" stroke-linejoin="round"/>' +
+  '<path d="M172 70 L200 8 L148 52 Z" fill="#FFCB05" stroke="#6b4e00" stroke-width="4" stroke-linejoin="round"/>' +
+  '<path d="M74 32 L60 8 L88 26 Z" fill="#3a2b00"/>' +
+  '<path d="M186 32 L200 8 L172 26 Z" fill="#3a2b00"/>' +
+  '<ellipse cx="130" cy="182" rx="72" ry="62" fill="#FFCB05" stroke="#6b4e00" stroke-width="4"/>' +
+  '<circle cx="130" cy="120" r="78" fill="#FFCB05" stroke="#6b4e00" stroke-width="4"/>' +
+  '<ellipse cx="100" cy="238" rx="22" ry="12" fill="#e0a800" stroke="#6b4e00" stroke-width="3"/>' +
+  '<ellipse cx="160" cy="238" rx="22" ry="12" fill="#e0a800" stroke="#6b4e00" stroke-width="3"/>' +
+  '<circle cx="84" cy="140" r="17" fill="#EE1515"/>' +
+  '<circle cx="176" cy="140" r="17" fill="#EE1515"/>' +
+  '<circle cx="106" cy="112" r="13" fill="#1a1a1a"/>' +
+  '<circle cx="154" cy="112" r="13" fill="#1a1a1a"/>' +
+  '<circle cx="110.5" cy="107" r="4.5" fill="#fff"/>' +
+  '<circle cx="158.5" cy="107" r="4.5" fill="#fff"/>' +
+  '<path d="M124 130 Q130 135 136 130 Z" fill="#1a1a1a"/>' +
+  '<path d="M116 140 Q130 154 144 140" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>';
+
+// Tag every leaf element that is purely an owl mascot so it can be swapped.
+const tagMascotElements = () => {
+  document.querySelectorAll('.nav-logo-icon, .level-welcome-icon, .guide-intro-icon, .activity-instruction span, span, div').forEach(el => {
+    if (el.childElementCount === 0 &&
+        el.textContent.trim() === OWL_EMOJI &&
+        !el.hasAttribute('data-mascot')) {
+      el.setAttribute('data-mascot', '');
+      el.setAttribute('data-mascot-original', el.innerHTML);
+    }
+  });
+  // The large hero illustration is swapped by replacing its inner artwork.
+  document.querySelectorAll('.hero-owl').forEach(el => {
+    if (!el.hasAttribute('data-mascot-hero')) {
+      el.setAttribute('data-mascot-hero', '');
+      el.setAttribute('data-mascot-hero-original', el.innerHTML);
+    }
+  });
+};
+
+// Swap mascots to match the active theme (decorative only — no content/text changed).
+const applyMascots = (theme) => {
+  document.querySelectorAll('[data-mascot]').forEach(el => {
+    if (theme === 'pokemon') {
+      el.innerHTML = PIKACHU_SVG;
+      el.classList.add('has-pika');
+    } else {
+      const original = el.getAttribute('data-mascot-original');
+      if (original !== null) el.innerHTML = original;
+      el.classList.remove('has-pika');
+    }
+  });
+  document.querySelectorAll('[data-mascot-hero]').forEach(el => {
+    if (theme === 'pokemon') {
+      el.innerHTML = PIKACHU_HERO_INNER;
+      el.setAttribute('aria-label', 'Pikachu mascot');
+    } else {
+      const original = el.getAttribute('data-mascot-hero-original');
+      if (original !== null) el.innerHTML = original;
+      el.setAttribute('aria-label', 'Ollie the Owl mascot');
+    }
+  });
+};
+
 const applyTheme = (theme) => {
   const root = document.documentElement;
   if (theme === 'pokemon') {
@@ -1632,9 +1713,7 @@ const applyTheme = (theme) => {
   } else {
     root.removeAttribute('data-theme');
   }
-  // Swap mascot/decorative emoji to match the active theme (no educational content touched)
-  const mascotEmoji = theme === 'pokemon' ? '⚡' : '🦉';
-  document.querySelectorAll('[data-mascot-icon]').forEach(el => { el.textContent = mascotEmoji; });
+  applyMascots(theme);
 };
 
 const themeButtonMarkup = (theme) => theme === 'pokemon'
@@ -1644,10 +1723,8 @@ const themeButtonMarkup = (theme) => theme === 'pokemon'
 const initThemeSwitcher = () => {
   let current = getSavedTheme();
 
-  // Tag mascot icons so they can be swapped, then apply the saved theme.
-  document.querySelectorAll('.nav-logo-icon, .level-welcome-icon').forEach(el => {
-    el.setAttribute('data-mascot-icon', '');
-  });
+  // Tag all owl mascots once, then apply the saved theme (owl ↔ Pikachu).
+  tagMascotElements();
   applyTheme(current);
 
   const buttons = [];

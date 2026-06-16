@@ -186,8 +186,24 @@
 }
 
 [data-theme="pokemon"] .nav-logo-icon {
-  background: linear-gradient(180deg, var(--coral) 0 48%, #ffffff 52% 100%);
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
   border: 2px solid var(--text-dark);
+}
+
+/* Pikachu mascot SVG — sized to the element font-size so it matches the
+   owl it replaces, keeping layout, alignment and spacing identical. */
+.pika-mascot {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.nav-logo-icon.has-pika .pika-mascot,
+.level-welcome-icon.has-pika .pika-mascot,
+.guide-intro-icon.has-pika .pika-mascot {
+  display: block;
 }
 
 [data-theme="pokemon"] ::-webkit-scrollbar-thumb { background: var(--coral); }
