@@ -176,6 +176,49 @@
 
     .skip-by-btn:hover { background: var(--blue-light); border-color: var(--blue); }
     .skip-by-btn.active { background: var(--blue); border-color: var(--blue-dark); color: white; }
+
+    .level-welcome {
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-card);
+    }
+
+    .level-welcome-icon {
+      font-size: 4rem;
+      flex-shrink: 0;
+      animation: wiggle 4s ease-in-out infinite;
+    }
+
+    .level-welcome-text {
+      max-width: 640px;
+      min-width: 0;
+    }
+
+    .level-welcome-text h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .level-welcome-text p {
+      font-size: 0.92rem;
+      color: var(--text-body);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .level-welcome {
+        padding: var(--space-lg);
+      }
+    }
   </style>
 </head>
 <body>
@@ -693,15 +736,32 @@ document.addEventListener('DOMContentLoaded', () => {
       if (targetEl) targetEl.textContent = currentTarget;
       if (targetCircle) targetCircle.textContent = currentTarget;
       if (targetDisp) targetDisp.textContent = currentTarget;
-      bondsContainer.querySelectorAll('.bond-input-1, .bond-input-2').forEach(i => { i.value = ''; i.className = 'math-input'; i.style.width='80px'; i.style.height='80px'; i.style.fontSize='2rem'; });
+      bondsContainer.querySelectorAll('input[aria-label="First number"], input[aria-label="Second number"]').forEach((input, index) => {
+        input.value = '';
+        input.className = `math-input ${index === 0 ? 'bond-input-1' : 'bond-input-2'}`;
+        input.style.width = '80px';
+        input.style.height = '80px';
+        input.style.fontSize = '2rem';
+      });
       document.getElementById('bond-feedback').className = 'feedback';
     }
 
     bondsContainer.querySelector('.check-bond-btn')?.addEventListener('click', () => {
-      const v1 = parseInt(bondsContainer.querySelector('.bond-input-1')?.value);
-      const v2 = parseInt(bondsContainer.querySelector('.bond-input-2')?.value);
+      const firstInput = bondsContainer.querySelector('.bond-input-1');
+      const secondInput = bondsContainer.querySelector('.bond-input-2');
+      const firstValue = String(firstInput?.value ?? '').trim();
+      const secondValue = String(secondInput?.value ?? '').trim();
       const fb = document.getElementById('bond-feedback');
-      if (isNaN(v1) || isNaN(v2)) { showToast('Fill in both boxes!', 'info'); return; }
+      if (firstValue === '' || secondValue === '') {
+        showToast('Fill in both boxes!', 'info');
+        return;
+      }
+      const v1 = Number(firstValue);
+      const v2 = Number(secondValue);
+      if (Number.isNaN(v1) || Number.isNaN(v2)) {
+        showToast('Fill in both boxes!', 'info');
+        return;
+      }
       if (v1 + v2 === currentTarget) {
         fb.className = 'feedback show success';
         fb.innerHTML = `<span class="feedback-icon">🌟</span> ${v1} + ${v2} = ${currentTarget}! Perfect number bond!`;
