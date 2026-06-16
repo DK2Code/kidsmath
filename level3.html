@@ -413,6 +413,15 @@
     </div>
   </div>
 
+  <section class="activity-card blue-card reveal" style="margin-top:var(--space-lg);">
+    <h2 class="activity-title">🧩 More Level 3 Activities</h2>
+    <div class="activity-instruction blue">
+      <span style="font-size:1.5rem;">🦉</span>
+      <span>Extra activities focused on place value, multiplication intro, time, money, and measurement.</span>
+    </div>
+    <div id="extra-level-3"></div>
+  </section>
+
   <!-- Navigation -->
   <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--blue-light);margin-top:var(--space-lg);">
     <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">🏗️ Great building! Ready for a bigger adventure?</p>
@@ -436,6 +445,7 @@
   </div>
 </footer>
 
+<script src="js/learning-data.js"></script>
 <script src="js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -639,6 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadBond();
   }
+
+  renderExtraActivities('extra-level-3', 3, 5, 8);
 });
 </script>
 </body>

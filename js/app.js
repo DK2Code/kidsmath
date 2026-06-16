@@ -1531,6 +1531,71 @@ const initSubtractionActivity = (containerId) => {
 };
 
 // ============================================================
+// LEVEL HELPERS + CATALOG RENDERING
+// ============================================================
+const getUnlockedLevel = () => {
+  const saved = parseInt(localStorage.getItem('numland_unlocked_level') || '0', 10);
+  if (!Number.isNaN(saved) && saved >= 1 && saved <= 4) return saved;
+
+  const stars = Progress.get().stars || 0;
+  if (stars >= 40) return 4;
+  if (stars >= 20) return 3;
+  if (stars >= 8) return 2;
+  return 1;
+};
+
+const getSelectedLevel = () => {
+  const level = parseInt(localStorage.getItem('numland_selected_level') || '1', 10);
+  const safeLevel = Number.isNaN(level) ? 1 : Math.max(1, Math.min(4, level));
+  return Math.min(safeLevel, getUnlockedLevel());
+};
+
+const setSelectedLevel = (level) => {
+  const safeLevel = Math.max(1, Math.min(4, Number(level) || 1));
+  const unlocked = getUnlockedLevel();
+  const applied = Math.min(safeLevel, unlocked);
+  localStorage.setItem('numland_selected_level', String(applied));
+  return applied;
+};
+
+const renderExtraActivities = (containerId, level, startIndex = 0, maxCards = 8) => {
+  const mount = document.getElementById(containerId);
+  if (!mount || !window.getActivitiesForLevel) return;
+
+  const items = window.getActivitiesForLevel(level).slice(startIndex, startIndex + maxCards);
+  if (!items.length) return;
+
+  mount.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;';
+
+  items.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'feature-card';
+    card.style.padding = '16px';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;">
+        <strong style="font-family:var(--font-fun);font-size:0.95rem;color:var(--text-dark);">${item.title}</strong>
+        <span style="font-family:var(--font-fun);font-size:0.7rem;padding:4px 8px;border-radius:20px;background:var(--bg-cream);color:var(--text-light);text-transform:capitalize;">${item.difficulty}</span>
+      </div>
+      <p style="font-size:0.82rem;color:var(--text-body);line-height:1.5;margin-bottom:8px;">${item.instructions}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="font-family:var(--font-fun);font-size:0.72rem;padding:4px 8px;border-radius:20px;background:var(--blue-light);color:var(--blue-dark);">${item.mathConcept}</span>
+        <span style="font-family:var(--font-fun);font-size:0.72rem;padding:4px 8px;border-radius:20px;background:var(--green-light);color:var(--green-dark);">${item.rewardType}</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  mount.appendChild(grid);
+};
+
+window.getUnlockedLevel = getUnlockedLevel;
+window.getSelectedLevel = getSelectedLevel;
+window.setSelectedLevel = setSelectedLevel;
+window.renderExtraActivities = renderExtraActivities;
+
+// ============================================================
 // STAR DISPLAY UPDATE FROM STORAGE
 // ============================================================
 const initStarDisplay = () => {

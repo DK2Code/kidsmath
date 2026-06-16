@@ -193,6 +193,85 @@
 
     .challenge-item:hover { transform: scale(1.2); }
     .challenge-item.counted { opacity: 0.3; transform: scale(0.9); }
+
+    .level-gate {
+      background: linear-gradient(135deg, #fff, #FFF8E1);
+      border: 3px solid var(--yellow);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-xl);
+    }
+
+    .level-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    @media (max-width: 700px) {
+      .level-choice-grid { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+    }
+
+    .level-choice {
+      border: 2px solid var(--yellow-light);
+      border-radius: var(--radius-lg);
+      padding: 10px 8px;
+      background: white;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-bounce);
+      font-family: var(--font-fun);
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .level-choice:hover { transform: translateY(-2px); border-color: var(--yellow); }
+    .level-choice.active { border-color: var(--green); background: var(--green-light); }
+    .level-choice.locked { opacity: 0.45; cursor: not-allowed; }
+
+    .game-filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: var(--space-md);
+    }
+
+    .game-filter {
+      background: white;
+      border: 2px solid var(--blue-light);
+      border-radius: var(--radius-full);
+      padding: 8px 12px;
+      font-family: var(--font-fun);
+      font-weight: 700;
+      color: var(--text-dark);
+      width: 100%;
+    }
+
+    .activity-tab.is-locked {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.35);
+    }
+
+    .recommended-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .recommended-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-family: var(--font-fun);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -230,6 +309,45 @@
 </header>
 
 <main class="activity-container" style="max-width:800px;">
+
+  <section class="level-gate reveal">
+    <h2 class="activity-title" style="margin-bottom:8px;">🎯 Choose Game Level</h2>
+    <p style="font-size:0.9rem;color:var(--text-body);margin-bottom:8px;">Games stay matched to learned skills. Select a level first, then play only age-appropriate challenges.</p>
+    <p id="game-level-status" style="font-family:var(--font-fun);font-size:0.82rem;color:var(--text-light);margin-bottom:10px;">No level selected yet.</p>
+
+    <div id="game-level-choices" class="level-choice-grid"></div>
+
+    <div class="game-filters">
+      <select id="game-filter-topic" class="game-filter">
+        <option value="all">All Topics</option>
+      </select>
+      <select id="game-filter-difficulty" class="game-filter">
+        <option value="all">All Difficulty</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <select id="game-filter-age" class="game-filter">
+        <option value="all">All Ages</option>
+      </select>
+      <label class="game-filter" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="game-filter-recent" style="accent-color:#4D96FF;" />
+        Recently Played
+      </label>
+      <label class="game-filter" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="game-filter-recommended" style="accent-color:#6BCB77;" />
+        Recommended Next
+      </label>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+      <div>
+        <div style="font-family:var(--font-fun);font-size:0.82rem;color:var(--text-light);">Recommended activities for this level:</div>
+        <div id="recommended-list" class="recommended-strip"></div>
+      </div>
+      <a href="parents.html" class="btn btn-secondary btn-sm">🛡️ Parent / Teacher Mode</a>
+    </div>
+  </section>
 
   <!-- Game tabs -->
   <div class="activity-tabs reveal" role="tablist">
@@ -403,53 +521,296 @@
   </div>
 </footer>
 
+<script src="js/learning-data.js"></script>
 <script src="js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  const levelStatus = document.getElementById('game-level-status');
+  const levelChoices = document.getElementById('game-level-choices');
+  const topicFilter = document.getElementById('game-filter-topic');
+  const diffFilter = document.getElementById('game-filter-difficulty');
+  const ageFilter = document.getElementById('game-filter-age');
+  const recentFilter = document.getElementById('game-filter-recent');
+  const recommendedFilter = document.getElementById('game-filter-recommended');
+  const recommendedList = document.getElementById('recommended-list');
+  const tabs = Array.from(document.querySelectorAll('.activity-tab[data-tab]'));
+
+  const gameIds = ['game-quiz', 'game-flash', 'game-bubble', 'game-count'];
+  const recommendedGames = {
+    1: ['game-count', 'game-bubble', 'game-quiz'],
+    2: ['game-quiz', 'game-count', 'game-flash'],
+    3: ['game-quiz', 'game-flash', 'game-bubble'],
+    4: ['game-quiz', 'game-flash', 'game-count'],
+  };
+
+  const state = {
+    level: null,
+    filteredGameIds: [...gameIds],
+    gamesForLevel: [],
+    recentGames: JSON.parse(localStorage.getItem('numland_recent_games') || '[]'),
+  };
+
+  const storedLevel = localStorage.getItem('numland_selected_level');
+  if (storedLevel) {
+    state.level = parseInt(storedLevel, 10);
+  }
+
+  function saveRecent(gameId) {
+    if (!state.level) return;
+    state.recentGames = state.recentGames.filter(item => !(item.gameId === gameId && item.level === state.level));
+    state.recentGames.unshift({ gameId, level: state.level, at: Date.now() });
+    state.recentGames = state.recentGames.slice(0, 12);
+    localStorage.setItem('numland_recent_games', JSON.stringify(state.recentGames));
+  }
+
+  function getRecentForLevel(level) {
+    return state.recentGames.filter(item => item.level === level).map(item => item.gameId);
+  }
+
+  function tabLabel(gameId) {
+    const map = {
+      'game-quiz': 'Quick Math',
+      'game-flash': 'Flash Cards',
+      'game-bubble': 'Number Bubbles',
+      'game-count': 'Count Challenge',
+    };
+    return map[gameId] || gameId;
+  }
+
+  function buildLevelChoices() {
+    if (!levelChoices || !window.NUMLAND_LEVELS) return;
+    levelChoices.innerHTML = '';
+    const unlocked = window.getUnlockedLevel ? window.getUnlockedLevel() : 1;
+
+    Object.values(window.NUMLAND_LEVELS).forEach(level => {
+      const card = document.createElement('button');
+      card.className = 'level-choice';
+      if (state.level === level.id) card.classList.add('active');
+      if (level.id > unlocked) card.classList.add('locked');
+      card.type = 'button';
+      card.innerHTML = `${level.icon}<br><span style="font-size:0.8rem;">${level.label}</span><br><span style="font-size:0.72rem;color:var(--text-light);">${level.ageGroup}</span>`;
+      card.addEventListener('click', () => {
+        if (level.id > unlocked) {
+          showToast('This level is locked for now. Keep practicing to unlock it!', 'info');
+          return;
+        }
+        state.level = window.setSelectedLevel ? window.setSelectedLevel(level.id) : level.id;
+        applyLevelAndFilters();
+        playSound('click');
+      });
+      levelChoices.appendChild(card);
+    });
+  }
+
+  function buildFilterOptions() {
+    if (!state.level) return;
+
+    const levelGames = window.getGamesForLevel ? window.getGamesForLevel(state.level) : [];
+    state.gamesForLevel = levelGames;
+
+    const topics = Array.from(new Set(levelGames.map(g => g.mathConcept)));
+    topicFilter.innerHTML = '<option value="all">All Topics</option>';
+    topics.forEach(topic => {
+      const opt = document.createElement('option');
+      opt.value = topic;
+      opt.textContent = topic;
+      topicFilter.appendChild(opt);
+    });
+
+    const ages = Array.from(new Set(levelGames.map(g => g.ageGroup)));
+    ageFilter.innerHTML = '<option value="all">All Ages</option>';
+    ages.forEach(age => {
+      const opt = document.createElement('option');
+      opt.value = age;
+      opt.textContent = age;
+      ageFilter.appendChild(opt);
+    });
+
+    const recommendedActivities = window.NUMLAND_RECOMMENDED?.[state.level] || [];
+    recommendedList.innerHTML = '';
+    recommendedActivities.forEach(item => {
+      const pill = document.createElement('span');
+      pill.className = 'recommended-pill';
+      pill.textContent = item;
+      recommendedList.appendChild(pill);
+    });
+  }
+
+  function applyTabsAccess() {
+    tabs.forEach(tab => {
+      const id = tab.dataset.tab;
+      const enabled = state.filteredGameIds.includes(id);
+      tab.classList.toggle('is-locked', !enabled);
+      tab.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+    });
+
+    const activeTab = document.querySelector('.activity-tab.active');
+    if (!activeTab || !state.filteredGameIds.includes(activeTab.dataset.tab)) {
+      const firstEnabled = tabs.find(tab => state.filteredGameIds.includes(tab.dataset.tab));
+      if (firstEnabled) firstEnabled.click();
+    }
+  }
+
+  function applyFilters() {
+    if (!state.level) {
+      state.filteredGameIds = [];
+      applyTabsAccess();
+      return;
+    }
+
+    const topic = topicFilter.value;
+    const age = ageFilter.value;
+    const difficulty = diffFilter.value;
+    const recentOnly = recentFilter.checked;
+    const recommendedOnly = recommendedFilter.checked;
+
+    let filtered = [...state.gamesForLevel];
+    if (topic !== 'all') filtered = filtered.filter(g => g.mathConcept === topic);
+    if (age !== 'all') filtered = filtered.filter(g => g.ageGroup === age);
+    if (difficulty !== 'all') filtered = filtered.filter(g => g.difficulty === difficulty);
+    if (recentOnly) {
+      const recentIds = getRecentForLevel(state.level);
+      filtered = filtered.filter(g => recentIds.includes(g.gameId));
+    }
+    if (recommendedOnly) {
+      const ids = recommendedGames[state.level] || [];
+      filtered = filtered.filter(g => ids.includes(g.gameId));
+    }
+
+    state.filteredGameIds = Array.from(new Set(filtered.map(g => g.gameId)));
+    applyTabsAccess();
+
+    if (!state.filteredGameIds.length) {
+      showToast('No games match this filter set. Try relaxing filters.', 'info');
+      state.filteredGameIds = [...gameIds];
+      applyTabsAccess();
+    }
+  }
+
+  function updateGameStatus() {
+    if (!state.level || !window.NUMLAND_LEVELS?.[state.level]) {
+      levelStatus.textContent = 'No level selected yet. Choose a level to unlock matched games.';
+      document.querySelectorAll('.activity-panel').forEach(panel => panel.style.opacity = '0.5');
+      return;
+    }
+    const meta = window.NUMLAND_LEVELS[state.level];
+    levelStatus.textContent = `${meta.icon} ${meta.label} selected: ${meta.message}`;
+    document.querySelectorAll('.activity-panel').forEach(panel => panel.style.opacity = '1');
+  }
+
+  function getGameMeta(gameId) {
+    return state.gamesForLevel.find(g => g.gameId === gameId);
+  }
+
+  function applyLevelAndFilters() {
+    buildLevelChoices();
+    updateGameStatus();
+    if (state.level) buildFilterOptions();
+    applyFilters();
+    configureFlashTypeButtons();
+    configureBubbleRanges();
+    resetGamesForLevel();
+  }
+
+  [topicFilter, diffFilter, ageFilter, recentFilter, recommendedFilter].forEach(el => {
+    el?.addEventListener('change', applyFilters);
+  });
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (!state.level) {
+        showToast('Choose a learning level first so games match what your child has learned.', 'info');
+        return;
+      }
+      saveRecent(tab.dataset.tab);
+    });
+  });
 
   // ── QUICK MATH QUIZ ──
-  let quizScore = 0, quizBest = parseInt(localStorage.getItem('quiz_best') || '0');
-  let quizActive = false, quizTimerInterval = null, quizTimeLeft = 100;
+  let quizScore = 0;
+  let quizBest = parseInt(localStorage.getItem('quiz_best') || '0', 10);
+  let quizActive = false;
+  let quizTimerInterval = null;
+  let quizTimeLeft = 100;
   let quizCurrent = null;
 
   document.getElementById('quiz-best').textContent = quizBest;
 
   function generateQuizQuestion() {
-    const types = ['add','sub','mult','count'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    let q = '', answer = 0, wrong = [];
+    if (!state.level) return { q: 'Choose a level first', answer: 1, options: [1, 2, 3, 4] };
 
-    if (type === 'add') {
-      const a = Math.floor(Math.random() * 8) + 1;
-      const b = Math.floor(Math.random() * 8) + 1;
-      answer = a + b;
-      q = `${a} + ${b} = ?`;
-      wrong = [answer-1, answer+1, answer+2].filter(n => n !== answer && n > 0);
-    } else if (type === 'sub') {
-      const a = Math.floor(Math.random() * 8) + 3;
-      const b = Math.floor(Math.random() * (a-1)) + 1;
-      answer = a - b;
-      q = `${a} - ${b} = ?`;
-      wrong = [answer-1, answer+1, answer+2].filter(n => n !== answer && n >= 0);
-    } else if (type === 'mult') {
-      const a = Math.floor(Math.random() * 6) + 1;
-      const b = Math.floor(Math.random() * 6) + 1;
-      answer = a * b;
-      q = `${a} × ${b} = ?`;
-      wrong = [answer-a, answer+a, answer+b].filter(n => n !== answer && n > 0);
-    } else {
-      const n = Math.floor(Math.random() * 9) + 2;
-      const prev = n - 1, next = n + 1;
-      answer = next;
+    let q = '';
+    let answer = 0;
+    let wrong = [];
+
+    if (state.level === 1) {
+      const n = Math.floor(Math.random() * 9) + 1;
+      answer = n + 1;
       q = `What comes after ${n}?`;
-      wrong = [n-1, n, n+2];
+      wrong = [n - 1, n, n + 2].filter(v => v > 0);
+    } else if (state.level === 2) {
+      const mode = Math.random() < 0.55 ? 'add' : 'sub';
+      if (mode === 'add') {
+        const a = Math.floor(Math.random() * 9) + 1;
+        const b = Math.floor(Math.random() * 9) + 1;
+        answer = a + b;
+        q = `${a} + ${b} = ?`;
+      } else {
+        const a = Math.floor(Math.random() * 10) + 5;
+        const b = Math.floor(Math.random() * (a - 1)) + 1;
+        answer = a - b;
+        q = `${a} - ${b} = ?`;
+      }
+      wrong = [answer - 1, answer + 1, answer + 2].filter(v => v >= 0);
+    } else if (state.level === 3) {
+      const mode = ['add', 'mult', 'place'][Math.floor(Math.random() * 3)];
+      if (mode === 'add') {
+        const a = Math.floor(Math.random() * 40) + 10;
+        const b = Math.floor(Math.random() * 40) + 10;
+        answer = a + b;
+        q = `${a} + ${b} = ?`;
+      } else if (mode === 'mult') {
+        const a = Math.floor(Math.random() * 6) + 2;
+        const b = Math.floor(Math.random() * 6) + 2;
+        answer = a * b;
+        q = `${a} × ${b} = ?`;
+      } else {
+        const tens = Math.floor(Math.random() * 8) + 1;
+        const ones = Math.floor(Math.random() * 9);
+        answer = tens * 10 + ones;
+        q = `What number is ${tens} tens and ${ones} ones?`;
+      }
+      wrong = [answer - 2, answer - 1, answer + 2].filter(v => v >= 0);
+    } else {
+      const mode = ['mult', 'div', 'remainder'][Math.floor(Math.random() * 3)];
+      if (mode === 'mult') {
+        const a = Math.floor(Math.random() * 8) + 3;
+        const b = Math.floor(Math.random() * 8) + 2;
+        answer = a * b;
+        q = `${a} × ${b} = ?`;
+      } else if (mode === 'div') {
+        const b = Math.floor(Math.random() * 6) + 2;
+        const c = Math.floor(Math.random() * 8) + 2;
+        const a = b * c;
+        answer = c;
+        q = `${a} ÷ ${b} = ?`;
+      } else {
+        const divisor = Math.floor(Math.random() * 6) + 2;
+        const quotient = Math.floor(Math.random() * 5) + 2;
+        const remainder = Math.floor(Math.random() * (divisor - 1));
+        const dividend = divisor * quotient + remainder;
+        answer = remainder;
+        q = `Remainder: ${dividend} ÷ ${divisor}`;
+      }
+      wrong = [answer - 1, answer + 1, answer + 3].filter(v => v >= 0);
     }
 
-    const options = [...wrong.slice(0,3), answer].sort(() => Math.random() - 0.5);
+    const options = [...wrong.slice(0, 3), answer].sort(() => Math.random() - 0.5);
     return { q, answer, options };
   }
 
   function loadQuizQuestion() {
+    if (!state.level) return;
     quizCurrent = generateQuizQuestion();
     document.getElementById('quiz-question').textContent = quizCurrent.q;
     document.getElementById('quiz-result').textContent = '';
@@ -460,11 +821,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = document.createElement('button');
       btn.className = 'quiz-option';
       btn.textContent = opt;
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', () => {
         if (!quizActive) return;
         clearInterval(quizTimerInterval);
         optionsEl.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
-        if (parseInt(opt) === quizCurrent.answer) {
+        if (parseInt(opt, 10) === quizCurrent.answer) {
           btn.classList.add('correct');
           quizScore++;
           document.getElementById('quiz-score').textContent = quizScore;
@@ -473,16 +834,16 @@ document.addEventListener('DOMContentLoaded', () => {
           playSound('correct');
           if (quizScore > quizBest) {
             quizBest = quizScore;
-            localStorage.setItem('quiz_best', quizBest);
+            localStorage.setItem('quiz_best', String(quizBest));
             document.getElementById('quiz-best').textContent = quizBest;
           }
           Progress.addStars(1);
         } else {
           btn.classList.add('wrong');
           optionsEl.querySelectorAll('.quiz-option').forEach(b => {
-            if (parseInt(b.textContent) === quizCurrent.answer) b.classList.add('correct');
+            if (parseInt(b.textContent, 10) === quizCurrent.answer) b.classList.add('correct');
           });
-          document.getElementById('quiz-result').textContent = `😊 The answer was ${quizCurrent.answer}! You're learning!`;
+          document.getElementById('quiz-result').textContent = `😊 The answer was ${quizCurrent.answer}. Keep going!`;
           document.getElementById('quiz-result').style.color = 'var(--coral-dark)';
           gentleEncourage();
         }
@@ -491,15 +852,15 @@ document.addEventListener('DOMContentLoaded', () => {
       optionsEl.appendChild(btn);
     });
 
-    // Timer
     quizTimeLeft = 100;
-    document.getElementById('quiz-timer').style.width = '100%';
-    document.getElementById('quiz-timer').style.background = 'linear-gradient(90deg, var(--green), var(--yellow))';
+    const timer = document.getElementById('quiz-timer');
+    timer.style.width = '100%';
+    timer.style.background = 'linear-gradient(90deg, var(--green), var(--yellow))';
 
     quizTimerInterval = setInterval(() => {
       quizTimeLeft -= 0.8;
-      document.getElementById('quiz-timer').style.width = Math.max(0, quizTimeLeft) + '%';
-      if (quizTimeLeft <= 30) document.getElementById('quiz-timer').style.background = 'var(--coral)';
+      timer.style.width = `${Math.max(0, quizTimeLeft)}%`;
+      if (quizTimeLeft <= 30) timer.style.background = 'var(--coral)';
       if (quizTimeLeft <= 0) {
         clearInterval(quizTimerInterval);
         if (quizActive) {
@@ -507,7 +868,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('quiz-result').style.color = 'var(--coral-dark)';
           optionsEl.querySelectorAll('.quiz-option').forEach(b => {
             b.disabled = true;
-            if (parseInt(b.textContent) === quizCurrent.answer) b.classList.add('correct');
+            if (parseInt(b.textContent, 10) === quizCurrent.answer) b.classList.add('correct');
           });
           document.getElementById('quiz-next').style.display = 'inline-flex';
         }
@@ -516,9 +877,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('quiz-start')?.addEventListener('click', () => {
+    if (!state.level) {
+      showToast('Choose a level first.', 'info');
+      return;
+    }
+    saveRecent('game-quiz');
     quizActive = true;
     quizScore = 0;
-    document.getElementById('quiz-score').textContent = 0;
+    document.getElementById('quiz-score').textContent = '0';
     document.getElementById('quiz-start').style.display = 'none';
     document.getElementById('quiz-next').style.display = 'none';
     loadQuizQuestion();
@@ -532,21 +898,41 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── FLASH CARDS ──
-  let flashType = 'add';
+  let flashType = 'count';
   let flashCards = [];
   let flashIdx = 0;
 
   function buildFlashCards(type) {
     flashCards = [];
-    if (type === 'add') {
-      for (let a = 1; a <= 10; a++) for (let b = 1; b <= 10; b++) flashCards.push({ q: `${a} + ${b}`, a: a+b, fact: `${a} + ${b} = ${a+b}` });
+    if (state.level === 1 || type === 'count') {
+      for (let i = 1; i <= 10; i++) {
+        flashCards.push({ q: `What comes after ${i}?`, a: i + 1, fact: `After ${i} comes ${i + 1}.` });
+      }
+    } else if (type === 'add') {
+      for (let a = 1; a <= (state.level >= 3 ? 12 : 10); a++) {
+        for (let b = 1; b <= (state.level >= 3 ? 12 : 10); b++) {
+          flashCards.push({ q: `${a} + ${b}`, a: a + b, fact: `${a} + ${b} = ${a + b}` });
+        }
+      }
     } else if (type === 'sub') {
-      for (let a = 2; a <= 10; a++) for (let b = 1; b < a; b++) flashCards.push({ q: `${a} - ${b}`, a: a-b, fact: `${a} - ${b} = ${a-b}` });
+      for (let a = 3; a <= (state.level >= 3 ? 20 : 12); a++) {
+        for (let b = 1; b < a; b++) {
+          flashCards.push({ q: `${a} - ${b}`, a: a - b, fact: `${a} - ${b} = ${a - b}` });
+        }
+      }
     } else if (type === 'mult') {
-      for (let a = 1; a <= 10; a++) for (let b = 1; b <= 10; b++) flashCards.push({ q: `${a} × ${b}`, a: a*b, fact: `${a} × ${b} = ${a*b}` });
+      const max = state.level >= 4 ? 12 : 6;
+      for (let a = 2; a <= max; a++) {
+        for (let b = 2; b <= max; b++) {
+          flashCards.push({ q: `${a} × ${b}`, a: a * b, fact: `${a} × ${b} = ${a * b}` });
+        }
+      }
     } else {
-      const facts = ['1 is the first number', '2 is an even number', '0 + anything = anything', '10 has one 1 and one 0', '5 + 5 = 10', '2 × anything = doubles it', '100 = 10 × 10'];
-      flashCards = facts.map((f, i) => ({ q: `Fact ${i+1}`, a: '🧠', fact: f }));
+      for (let b = 2; b <= 10; b++) {
+        for (let c = 2; c <= 10; c++) {
+          flashCards.push({ q: `${b * c} ÷ ${b}`, a: c, fact: `${b * c} ÷ ${b} = ${c}` });
+        }
+      }
     }
     flashCards = flashCards.sort(() => Math.random() - 0.5);
     flashIdx = 0;
@@ -556,69 +942,131 @@ document.addEventListener('DOMContentLoaded', () => {
   function showFlashCard() {
     if (!flashCards.length) return;
     const card = flashCards[flashIdx];
-    const front = document.getElementById('flash-front');
-    const answer = document.getElementById('flash-answer');
-    const fact = document.getElementById('flash-fact');
-    const progress = document.getElementById('flash-progress');
-    const cardEl = document.getElementById('flash-card');
+    document.getElementById('flash-front').textContent = card.q;
+    document.getElementById('flash-answer').textContent = card.a;
+    document.getElementById('flash-fact').textContent = card.fact;
+    document.getElementById('flash-progress').textContent = `Card ${flashIdx + 1} of ${flashCards.length}`;
+    document.getElementById('flash-card').classList.remove('flipped');
+  }
 
-    if (front) front.textContent = card.q;
-    if (answer) answer.textContent = card.a;
-    if (fact) fact.textContent = card.fact;
-    if (progress) progress.textContent = `Card ${flashIdx + 1} of ${flashCards.length}`;
-    if (cardEl) cardEl.classList.remove('flipped');
+  function configureFlashTypeButtons() {
+    const allowedByLevel = {
+      1: ['count'],
+      2: ['add', 'sub', 'count'],
+      3: ['add', 'sub', 'mult'],
+      4: ['mult', 'div'],
+    };
+    const allowed = allowedByLevel[state.level || 1];
+    const btnMap = [
+      { id: 'add', label: '➕ Addition' },
+      { id: 'sub', label: '➖ Subtraction' },
+      { id: 'mult', label: '✖️ Times Tables' },
+      { id: 'count', label: '🔢 Number Facts' },
+      { id: 'div', label: '➗ Division' },
+    ];
+
+    const row = document.querySelector('#game-flash div[style*="display:flex;gap:8px"]');
+    if (!row) return;
+    row.innerHTML = '';
+    btnMap.forEach(btnInfo => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-sm btn-secondary';
+      btn.textContent = btnInfo.label;
+      btn.disabled = !allowed.includes(btnInfo.id);
+      btn.style.opacity = btn.disabled ? '0.5' : '1';
+      btn.addEventListener('click', () => {
+        flashType = btnInfo.id;
+        buildFlashCards(flashType);
+        saveRecent('game-flash');
+        playSound('click');
+      });
+      row.appendChild(btn);
+    });
+
+    flashType = allowed[0];
+    buildFlashCards(flashType);
   }
 
   window.setFlashType = function(type) {
     flashType = type;
     buildFlashCards(type);
-    playSound('click');
   };
 
   document.getElementById('flash-card')?.addEventListener('click', function() {
     this.classList.toggle('flipped');
     playSound('select');
   });
-
   document.getElementById('flash-card')?.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') this.click();
   });
-
   document.getElementById('flash-next')?.addEventListener('click', () => {
+    if (!flashCards.length) return;
     flashIdx = (flashIdx + 1) % flashCards.length;
     showFlashCard();
+    saveRecent('game-flash');
     playSound('click');
   });
-
   document.getElementById('flash-prev')?.addEventListener('click', () => {
+    if (!flashCards.length) return;
     flashIdx = (flashIdx - 1 + flashCards.length) % flashCards.length;
     showFlashCard();
     playSound('click');
   });
-
   document.getElementById('flash-new-set')?.addEventListener('click', () => {
     buildFlashCards(flashType);
     playSound('click');
   });
 
-  buildFlashCards('add');
-
   // ── NUMBER BUBBLES ──
-  let bubbleNext = 1, bubbleMax = 10, bubbleActive = false;
-  const colors = ['#FF6B6B','#FF9E4F','#FFD93D','#6BCB77','#4D96FF','#C77DFF','#FF8FAB','#4CC98A','#6B8EFF','#FFD93D'];
+  let bubbleNext = 1;
+  let bubbleMax = 10;
+  let bubbleStep = 1;
+  let bubbleActive = false;
+  const colors = ['#FF6B6B', '#FF9E4F', '#FFD93D', '#6BCB77', '#4D96FF', '#C77DFF', '#FF8FAB', '#4CC98A', '#6B8EFF', '#FFD93D'];
+
+  function configureBubbleRanges() {
+    const select = document.getElementById('bubble-max');
+    const instruction = document.getElementById('bubble-instruction');
+    if (!select) return;
+
+    const optionsByLevel = {
+      1: [5, 10],
+      2: [10, 20],
+      3: [12, 24],
+      4: [15, 30],
+    };
+    const stepByLevel = { 1: 1, 2: 1, 3: 2, 4: 3 };
+
+    bubbleStep = stepByLevel[state.level || 1];
+    const opts = optionsByLevel[state.level || 1];
+    select.innerHTML = '';
+    opts.forEach((value, index) => {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value;
+      if (index === opts.length - 1) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    if (instruction) {
+      if (bubbleStep === 1) instruction.innerHTML = 'Pop bubbles in order! Start at <strong>1</strong>.';
+      else instruction.innerHTML = `Pop only in sequence by <strong>${bubbleStep}s</strong>!`;
+    }
+  }
 
   function spawnBubbles() {
     const container = document.getElementById('bubble-container');
     if (!container) return;
     container.innerHTML = '';
-    const max = parseInt(document.getElementById('bubble-max')?.value || 10);
+
+    const max = parseInt(document.getElementById('bubble-max')?.value || '10', 10);
     bubbleMax = max;
-    bubbleNext = 1;
-    document.getElementById('bubble-next').textContent = '1';
+    bubbleNext = bubbleStep;
+    document.getElementById('bubble-next').textContent = String(bubbleNext);
     document.getElementById('bubble-score').textContent = '0';
 
     const nums = [];
-    for (let i = 1; i <= max; i++) nums.push(i);
+    for (let i = bubbleStep; i <= max; i += bubbleStep) nums.push(i);
     nums.sort(() => Math.random() - 0.5);
 
     nums.forEach((n, i) => {
@@ -626,32 +1074,32 @@ document.addEventListener('DOMContentLoaded', () => {
       bubble.className = 'bubble';
       bubble.textContent = n;
       bubble.dataset.num = n;
-      bubble.style.background = `radial-gradient(circle at 35% 30%, ${colors[n%10]}AA, ${colors[n%10]})`;
-      bubble.style.left = (5 + Math.random() * 80) + '%';
-      bubble.style.top = (5 + Math.random() * 80) + '%';
-      bubble.style.animationDelay = `${i * 0.1}s`;
+      bubble.style.background = `radial-gradient(circle at 35% 30%, ${colors[n % 10]}AA, ${colors[n % 10]})`;
+      bubble.style.left = `${5 + Math.random() * 80}%`;
+      bubble.style.top = `${5 + Math.random() * 80}%`;
+      bubble.style.animationDelay = `${i * 0.08}s`;
 
       bubble.addEventListener('click', function() {
         if (!bubbleActive) return;
-        const num = parseInt(this.dataset.num);
+        const num = parseInt(this.dataset.num, 10);
         if (num === bubbleNext) {
           this.style.transform = 'scale(0)';
           this.style.opacity = '0';
           this.style.transition = 'all 0.3s ease';
           setTimeout(() => this.remove(), 300);
-          bubbleNext++;
-          document.getElementById('bubble-next').textContent = bubbleNext <= bubbleMax ? bubbleNext : '🎉';
-          document.getElementById('bubble-score').textContent = num;
+          bubbleNext += bubbleStep;
+          document.getElementById('bubble-next').textContent = bubbleNext <= bubbleMax ? String(bubbleNext) : '🎉';
+          document.getElementById('bubble-score').textContent = String(num);
           playSound('count');
           if (bubbleNext > bubbleMax) {
-            celebrate(`🫧 All ${bubbleMax} bubbles popped! Amazing!`);
+            celebrate(`🫧 Completed the ${bubbleStep === 1 ? 'counting' : `skip-by-${bubbleStep}`} challenge!`);
             Progress.addStars(2);
             bubbleActive = false;
           }
         } else {
           this.style.animation = 'shake 0.4s ease';
-          setTimeout(() => this.style.animation = '', 400);
-          gentleEncourage(`Find number ${bubbleNext} first!`);
+          setTimeout(() => { this.style.animation = ''; }, 400);
+          gentleEncourage(`Find ${bubbleNext} first!`);
         }
       });
 
@@ -660,91 +1108,144 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('bubble-start')?.addEventListener('click', () => {
+    if (!state.level) {
+      showToast('Choose a level first.', 'info');
+      return;
+    }
+    saveRecent('game-bubble');
     bubbleActive = true;
     spawnBubbles();
     playSound('click');
   });
-
   document.getElementById('bubble-reset')?.addEventListener('click', () => {
     bubbleActive = false;
     const container = document.getElementById('bubble-container');
-    if (container) container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';
-    document.getElementById('bubble-next').textContent = '1';
+    if (container) {
+      container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';
+    }
+    document.getElementById('bubble-next').textContent = String(bubbleStep);
     playSound('click');
   });
 
-  document.getElementById('bubble-container').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';
-
   // ── COUNT CHALLENGE ──
   const challengeEmojis = [
-    ['🍎','🍊','🍋','🍇','🍓','🥝'],
-    ['🐱','🐶','🐰','🐸','🐻','🐨'],
-    ['⭐','🌙','☀️','🌈','❄️','🌺'],
-    ['🎈','🎁','🎉','🎊','🎀','🎵'],
-    ['✏️','📏','📐','📚','✂️','🖍️'],
+    ['🍎', '🍊', '🍋', '🍇', '🍓', '🥝'],
+    ['🐱', '🐶', '🐰', '🐸', '🐻', '🐨'],
+    ['⭐', '🌙', '☀️', '🌈', '❄️', '🌺'],
+    ['🎈', '🎁', '🎉', '🎊', '🎀', '🎵'],
+    ['✏️', '📏', '📐', '📚', '✂️', '🖍️'],
   ];
-  let challengeAnswer = 0, challengeScore = 0;
+  let challengeAnswer = 0;
+  let challengeScore = 0;
   let countedItems = 0;
 
   function loadChallenge() {
+    if (!state.level) return;
     const emojiSet = challengeEmojis[Math.floor(Math.random() * challengeEmojis.length)];
     const emoji = emojiSet[Math.floor(Math.random() * emojiSet.length)];
-    const count = Math.floor(Math.random() * 12) + 3;
+
+    const ranges = {
+      1: [3, 10],
+      2: [6, 16],
+      3: [10, 24],
+      4: [12, 30],
+    };
+    const [min, max] = ranges[state.level] || [3, 10];
+    const count = Math.floor(Math.random() * (max - min + 1)) + min;
+
     challengeAnswer = count;
     countedItems = 0;
-
     const q = document.getElementById('challenge-question');
-    if (q) q.textContent = `How many ${emoji} are there? Click them to count!`;
+    if (q) q.textContent = `How many ${emoji} are there? Click them to count.`;
 
     const grid = document.getElementById('challenge-grid');
     if (grid) {
       grid.innerHTML = '';
-      const shuffled = Array.from({length: count}, () => emoji).sort(() => Math.random() - 0.5);
-      shuffled.forEach((e, i) => {
+      const shuffled = Array.from({ length: count }, () => emoji).sort(() => Math.random() - 0.5);
+      shuffled.forEach((itemEmoji, i) => {
         const item = document.createElement('span');
         item.className = 'challenge-item';
-        item.textContent = e;
-        item.title = `Item ${i+1}`;
+        item.textContent = itemEmoji;
+        item.title = `Item ${i + 1}`;
         item.addEventListener('click', function() {
           if (this.classList.contains('counted')) return;
           this.classList.add('counted');
           countedItems++;
           playSound('count');
-          if (countedItems === count) showToast(`You counted ${count}! Now type it! ✍️`, 'success');
+          if (countedItems === count) showToast(`You counted ${count}. Type it now!`, 'success');
         });
         grid.appendChild(item);
       });
     }
 
     const inp = document.getElementById('challenge-input');
-    if (inp) { inp.value = ''; inp.className = 'math-input'; inp.style.width='80px'; inp.style.height='80px'; inp.style.fontSize='2.5rem'; }
+    if (inp) {
+      inp.value = '';
+      inp.className = 'math-input';
+      inp.style.width = '80px';
+      inp.style.height = '80px';
+      inp.style.fontSize = '2.5rem';
+    }
     document.getElementById('challenge-feedback').className = 'feedback';
   }
 
   document.getElementById('challenge-check')?.addEventListener('click', () => {
-    const val = parseInt(document.getElementById('challenge-input')?.value);
+    const val = parseInt(document.getElementById('challenge-input')?.value || '', 10);
     const fb = document.getElementById('challenge-feedback');
     const inp = document.getElementById('challenge-input');
-    if (isNaN(val)) { showToast('Type the number!', 'info'); return; }
+    if (Number.isNaN(val)) {
+      showToast('Type the number!', 'info');
+      return;
+    }
     if (val === challengeAnswer) {
       inp.className = 'math-input correct';
       fb.className = 'feedback show success';
-      fb.innerHTML = `<span class="feedback-icon">🌟</span> Yes! There are ${challengeAnswer}! Perfect counting!`;
+      fb.innerHTML = `<span class="feedback-icon">🌟</span> Yes! There are ${challengeAnswer}.`;
       challengeScore++;
-      document.getElementById('count-challenge-score').textContent = challengeScore;
-      playSound('correct'); Progress.addStars(1);
+      document.getElementById('count-challenge-score').textContent = String(challengeScore);
+      playSound('correct');
+      Progress.addStars(1);
     } else {
       inp.className = 'math-input wrong';
       fb.className = 'feedback show error';
-      fb.innerHTML = `<span class="feedback-icon">😊</span> Click each item one by one to count carefully!`;
+      fb.innerHTML = '<span class="feedback-icon">😊</span> Count one by one and try again.';
       gentleEncourage();
     }
   });
 
-  document.getElementById('challenge-new')?.addEventListener('click', () => { loadChallenge(); playSound('click'); });
-  document.getElementById('challenge-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('challenge-check')?.click(); });
+  document.getElementById('challenge-new')?.addEventListener('click', () => {
+    if (!state.level) {
+      showToast('Choose a level first.', 'info');
+      return;
+    }
+    saveRecent('game-count');
+    loadChallenge();
+    playSound('click');
+  });
+  document.getElementById('challenge-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('challenge-check')?.click();
+  });
 
-  loadChallenge();
+  function resetGamesForLevel() {
+    clearInterval(quizTimerInterval);
+    quizActive = false;
+    document.getElementById('quiz-score').textContent = '0';
+    document.getElementById('quiz-start').style.display = 'inline-flex';
+    document.getElementById('quiz-next').style.display = 'none';
+    document.getElementById('quiz-question').textContent = state.level ? `Ready for ${window.NUMLAND_LEVELS[state.level].label}!` : 'Choose level first';
+    document.getElementById('quiz-options').innerHTML = '';
+    document.getElementById('quiz-result').textContent = '';
+
+    challengeScore = 0;
+    document.getElementById('count-challenge-score').textContent = '0';
+    loadChallenge();
+
+    document.getElementById('bubble-container').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';
+    document.getElementById('bubble-next').textContent = String(bubbleStep);
+    document.getElementById('bubble-score').textContent = '0';
+  }
+
+  applyLevelAndFilters();
 });
 </script>
 </body>

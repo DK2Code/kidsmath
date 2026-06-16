@@ -544,6 +544,15 @@
     </div>
   </div>
 
+  <section class="activity-card reveal" style="margin-top:var(--space-lg);">
+    <h2 class="activity-title">🧩 More Level 1 Activities</h2>
+    <div class="activity-instruction">
+      <span style="font-size:1.5rem;">🦉</span>
+      <span>These activities continue Level 1 learning from simple counting to number confidence.</span>
+    </div>
+    <div id="extra-level-1"></div>
+  </section>
+
   <!-- Navigation to next level -->
   <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--yellow-light);margin-top:var(--space-lg);">
     <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">
@@ -569,6 +578,7 @@
   </div>
 </footer>
 
+<script src="js/learning-data.js"></script>
 <script src="js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -800,6 +810,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ─── SHAPES ────────────────────────────────────────────
   // Handled by global exploreShape function below
+
+  renderExtraActivities('extra-level-1', 1, 5, 6);
 });
 
 // Shape exploration

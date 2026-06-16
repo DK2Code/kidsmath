@@ -487,6 +487,15 @@
     </div>
   </div>
 
+  <section class="activity-card purple-card reveal" style="margin-top:var(--space-lg);">
+    <h2 class="activity-title">🧩 More Level 4 Activities</h2>
+    <div class="activity-instruction" style="border-left-color:var(--purple);">
+      <span style="font-size:1.5rem;">🦉</span>
+      <span>More advanced activities for multiplication, division, fractions, geometry, and logic.</span>
+    </div>
+    <div id="extra-level-4"></div>
+  </section>
+
   <!-- Navigation -->
   <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--purple-light);margin-top:var(--space-lg);">
     <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">🏆 You're a Math Adventurer! Incredible work!</p>
@@ -510,6 +519,7 @@
   </div>
 </footer>
 
+<script src="js/learning-data.js"></script>
 <script src="js/app.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -839,6 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   loadMagicSquare();
+  renderExtraActivities('extra-level-4', 4, 5, 8);
 });
 </script>
 </body>

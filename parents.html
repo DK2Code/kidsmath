@@ -110,6 +110,61 @@
     .faq-item.open .faq-answer { display: block; }
     .faq-item.open .faq-toggle { transform: rotate(180deg); }
     .faq-toggle { transition: transform 0.3s ease; flex-shrink: 0; }
+
+    .parent-mode-card {
+      background: linear-gradient(135deg, #fff, #E8F0FF);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      border: 3px solid var(--blue);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-2xl);
+    }
+    .pm-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: var(--space-lg);
+    }
+    .pm-label {
+      display: block;
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text-light);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .pm-select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--blue-light);
+      font-family: var(--font-fun);
+      font-weight: 700;
+      color: var(--text-dark);
+      background: white;
+    }
+    .pm-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      border: 2px solid var(--blue-light);
+      box-shadow: var(--shadow-sm);
+    }
+    .pm-list {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+    .pm-list li {
+      font-size: 0.85rem;
+      color: var(--text-body);
+      line-height: 1.5;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      background: var(--bg-cream);
+      border: 1px solid #f0ece3;
+    }
   </style>
 </head>
 <body>
@@ -202,6 +257,37 @@
           <li>Visual division as equal sharing</li>
           <li>Magic square puzzles for logic thinking</li>
         </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="parent-mode-card reveal">
+    <h2 style="font-family:var(--font-display);font-size:1.5rem;color:var(--text-dark);margin-bottom:8px;">🛡️ Parent / Teacher Mode</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-lg);">Choose a level and preview only skills and activities that match learned content. Higher levels are locked by default.</p>
+
+    <div class="pm-controls">
+      <div>
+        <label class="pm-label" for="pm-level-select">Learning Level</label>
+        <select id="pm-level-select" class="pm-select"></select>
+      </div>
+      <div>
+        <label class="pm-label" for="pm-topic-select">Visible Topic</label>
+        <select id="pm-topic-select" class="pm-select"></select>
+      </div>
+      <div class="pm-box" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-family:var(--font-fun);font-weight:700;font-size:0.85rem;color:var(--text-body);">Lock higher levels by default</span>
+        <input id="pm-lock-toggle" type="checkbox" checked style="width:22px;height:22px;accent-color:#4D96FF;" />
+      </div>
+    </div>
+
+    <div class="pm-controls" style="margin-bottom:0;">
+      <div class="pm-box">
+        <h3 style="font-family:var(--font-fun);font-size:0.95rem;color:var(--text-dark);margin-bottom:10px;">✅ Practiced Skills</h3>
+        <ul id="pm-skills" class="pm-list"></ul>
+      </div>
+      <div class="pm-box">
+        <h3 style="font-family:var(--font-fun);font-size:0.95rem;color:var(--text-dark);margin-bottom:10px;">🎯 Appropriate Activities</h3>
+        <ul id="pm-activities" class="pm-list"></ul>
       </div>
     </div>
   </div>
@@ -309,6 +395,7 @@
   </div>
 </footer>
 
+<script src="js/learning-data.js"></script>
 <script src="js/app.js"></script>
 <script>
 function toggleFaq(item) {
@@ -317,6 +404,92 @@ function toggleFaq(item) {
   if (!isOpen) item.classList.add('open');
   playSound('click');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const levelSelect = document.getElementById('pm-level-select');
+  const topicSelect = document.getElementById('pm-topic-select');
+  const lockToggle = document.getElementById('pm-lock-toggle');
+  const skillsEl = document.getElementById('pm-skills');
+  const activitiesEl = document.getElementById('pm-activities');
+  if (!levelSelect || !topicSelect || !skillsEl || !activitiesEl || !window.NUMLAND_LEVELS) return;
+
+  const unlocked = window.getUnlockedLevel ? window.getUnlockedLevel() : 1;
+
+  function renderLevels() {
+    levelSelect.innerHTML = '';
+    Object.values(window.NUMLAND_LEVELS).forEach(level => {
+      const isLocked = lockToggle.checked && level.id > unlocked;
+      const option = document.createElement('option');
+      option.value = level.id;
+      option.textContent = `${level.icon} ${level.label} - ${level.title}${isLocked ? ' (Locked)' : ''}`;
+      option.disabled = isLocked;
+      levelSelect.appendChild(option);
+    });
+
+    if (Number(levelSelect.value) > unlocked && lockToggle.checked) {
+      levelSelect.value = String(unlocked);
+    }
+    if (!levelSelect.value) levelSelect.value = '1';
+  }
+
+  function renderTopicOptions(level) {
+    const activities = window.getActivitiesForLevel ? window.getActivitiesForLevel(level) : [];
+    const topics = Array.from(new Set(activities.map(a => a.mathConcept)));
+    topicSelect.innerHTML = '<option value="all">All Topics</option>';
+    topics.forEach(topic => {
+      const option = document.createElement('option');
+      option.value = topic;
+      option.textContent = topic;
+      topicSelect.appendChild(option);
+    });
+  }
+
+  function renderMode() {
+    const level = Number(levelSelect.value || 1);
+    const selectedTopic = topicSelect.value || 'all';
+    const levelMeta = window.NUMLAND_LEVELS[level];
+    const activities = window.getActivitiesForLevel ? window.getActivitiesForLevel(level) : [];
+    const filtered = selectedTopic === 'all' ? activities : activities.filter(a => a.mathConcept === selectedTopic);
+
+    skillsEl.innerHTML = '';
+    (levelMeta?.unlockedConcepts || []).forEach(skill => {
+      const li = document.createElement('li');
+      li.textContent = skill;
+      skillsEl.appendChild(li);
+    });
+
+    activitiesEl.innerHTML = '';
+    filtered.slice(0, 8).forEach(activity => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong style="color:var(--text-dark);">${activity.title}</strong><br>${activity.instructions}`;
+      activitiesEl.appendChild(li);
+    });
+
+    if (!filtered.length) {
+      const li = document.createElement('li');
+      li.textContent = 'No activities for this topic at the selected level yet.';
+      activitiesEl.appendChild(li);
+    }
+  }
+
+  lockToggle.addEventListener('change', () => {
+    renderLevels();
+    renderTopicOptions(Number(levelSelect.value || 1));
+    renderMode();
+  });
+
+  levelSelect.addEventListener('change', () => {
+    renderTopicOptions(Number(levelSelect.value || 1));
+    renderMode();
+  });
+
+  topicSelect.addEventListener('change', renderMode);
+
+  renderLevels();
+  levelSelect.value = String(Math.min(unlocked, window.getSelectedLevel ? window.getSelectedLevel() : 1));
+  renderTopicOptions(Number(levelSelect.value));
+  renderMode();
+});
 </script>
 </body>
 </html>
