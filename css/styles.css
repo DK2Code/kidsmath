@@ -1520,6 +1520,50 @@ button {
   padding: var(--space-2xl) var(--space-xl);
 }
 
+/* Welcome mascot banner — shared across all level pages (Level 1 is the source of truth) */
+.level-welcome {
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+  border: 2px solid transparent;
+}
+
+.level-welcome-icon {
+  font-size: 4rem;
+  flex-shrink: 0;
+  animation: wiggle 4s ease-in-out infinite;
+}
+
+.level-welcome-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.level-welcome-text h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.level-welcome-text p {
+  font-size: 0.92rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .level-welcome {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-lg);
+  }
+}
+
 .activity-card {
   background: white;
   border-radius: var(--radius-xl);
