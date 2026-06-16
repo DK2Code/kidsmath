@@ -1609,10 +1609,93 @@ const initStarDisplay = () => {
 };
 
 // ============================================================
+// THEME SWITCHER  (Default <-> Pokemon)
+// ============================================================
+const THEME_KEY = 'numland-theme';
+
+const getSavedTheme = () => {
+  try { return localStorage.getItem(THEME_KEY) === 'pokemon' ? 'pokemon' : 'default'; }
+  catch (e) { return 'default'; }
+};
+
+const saveTheme = (theme) => {
+  try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* storage unavailable */ }
+};
+
+const applyTheme = (theme) => {
+  const root = document.documentElement;
+  if (theme === 'pokemon') {
+    root.setAttribute('data-theme', 'pokemon');
+  } else {
+    root.removeAttribute('data-theme');
+  }
+  // Swap mascot/decorative emoji to match the active theme (no educational content touched)
+  const mascotEmoji = theme === 'pokemon' ? '⚡' : '🦉';
+  document.querySelectorAll('[data-mascot-icon]').forEach(el => { el.textContent = mascotEmoji; });
+};
+
+const themeButtonMarkup = (theme) => theme === 'pokemon'
+  ? '<span class="theme-switch-icon" aria-hidden="true">🔴</span> Pokémon'
+  : '<span class="theme-switch-icon" aria-hidden="true">🎨</span> Classic';
+
+const initThemeSwitcher = () => {
+  let current = getSavedTheme();
+
+  // Tag mascot icons so they can be swapped, then apply the saved theme.
+  document.querySelectorAll('.nav-logo-icon, .level-welcome-icon').forEach(el => {
+    el.setAttribute('data-mascot-icon', '');
+  });
+  applyTheme(current);
+
+  const buttons = [];
+  const refreshButtons = () => {
+    const nextName = current === 'pokemon' ? 'Classic' : 'Pokémon';
+    buttons.forEach(btn => {
+      btn.innerHTML = themeButtonMarkup(current);
+      btn.setAttribute('aria-label',
+        `Switch theme. Current theme: ${current === 'pokemon' ? 'Pokémon' : 'Classic'}. Activate to switch to ${nextName}.`);
+    });
+  };
+
+  const toggleTheme = () => {
+    current = current === 'pokemon' ? 'default' : 'pokemon';
+    applyTheme(current);
+    saveTheme(current);
+    refreshButtons();
+  };
+
+  // Desktop button — inserted before the Stars button / hamburger in the nav.
+  const nav = document.querySelector('.nav');
+  if (nav) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-switch';
+    btn.addEventListener('click', toggleTheme);
+    const anchor = nav.querySelector('.nav-btn') || nav.querySelector('.nav-hamburger');
+    nav.insertBefore(btn, anchor || null);
+    buttons.push(btn);
+  }
+
+  // Mobile menu entry — appended to the collapsible mobile nav.
+  const mobileNav = document.querySelector('.nav-mobile');
+  if (mobileNav) {
+    const mbtn = document.createElement('button');
+    mbtn.type = 'button';
+    mbtn.className = 'nav-link theme-switch-mobile';
+    mbtn.addEventListener('click', toggleTheme);
+    mobileNav.appendChild(mbtn);
+    buttons.push(mbtn);
+  }
+
+  refreshButtons();
+};
+
+// ============================================================
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
+  initThemeSwitcher();
   initScrollReveal();
   initStarDisplay();
   initActivityTabs();

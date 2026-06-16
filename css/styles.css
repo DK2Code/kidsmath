@@ -108,6 +108,166 @@
   --z-tooltip: 150;
 }
 
+/* ============================================================
+   POKEMON THEME  (applied via [data-theme="pokemon"] on <html>)
+   Re-maps the shared design tokens so the whole UI transforms
+   while keeping the same structure, layout and contrast.
+   ============================================================ */
+[data-theme="pokemon"] {
+  /* Brand Colors — Pokeball red / Pikachu yellow / Pokemon blue */
+  --yellow:       #FFCB05;
+  --yellow-light: #FFE780;
+  --yellow-dark:  #E0A800;
+  --coral:        #EE1515;
+  --coral-light:  #FF9A9A;
+  --coral-dark:   #B81212;
+  --green:        #3DB270;
+  --green-light:  #A8E6BF;
+  --green-dark:   #2A8F54;
+  --blue:         #3B5BDB;
+  --blue-light:   #AEC0FF;
+  --blue-dark:    #2440A8;
+  --purple:       #8E44CF;
+  --purple-light: #D9B8F5;
+  --purple-dark:  #6A2DA8;
+  --orange:       #FF7A29;
+  --orange-light: #FFC299;
+  --orange-dark:  #D95E10;
+  --pink:         #FF6E97;
+  --pink-light:   #FFC2D2;
+  --mint:         #8FE3C4;
+  --mint-dark:    #36B88A;
+
+  /* Backgrounds — light, clean, slightly blue-white */
+  --bg-cream:     #F2F6FF;
+  --bg-warm:      #FAFBFF;
+  --bg-white:     #FFFFFF;
+  --bg-card:      #FFFFFF;
+
+  /* Text — kept high-contrast for readability */
+  --text-dark:    #16213E;
+  --text-body:    #38415F;
+  --text-light:   #8089A8;
+
+  /* Level Colors */
+  --level1-primary:   #FFCB05;
+  --level1-secondary: #FF7A29;
+  --level1-bg:        #FFF6D6;
+  --level1-accent:    #EE1515;
+
+  --level2-primary:   #3DB270;
+  --level2-secondary: #36B88A;
+  --level2-bg:        #E2F7EA;
+  --level2-accent:    #3B5BDB;
+
+  --level3-primary:   #3B5BDB;
+  --level3-secondary: #5C7CFF;
+  --level3-bg:        #E6ECFF;
+  --level3-accent:    #8E44CF;
+
+  --level4-primary:   #8E44CF;
+  --level4-secondary: #6A2DA8;
+  --level4-bg:        #F1E6FF;
+  --level4-accent:    #EE1515;
+}
+
+/* Subtle Pokeball decorative background pattern */
+[data-theme="pokemon"] body {
+  background-color: var(--bg-cream);
+  background-image:
+    radial-gradient(circle at 10% 18%, rgba(238, 21, 21, 0.05) 0 55px, transparent 56px),
+    radial-gradient(circle at 90% 78%, rgba(59, 91, 219, 0.05) 0 65px, transparent 66px);
+  background-attachment: fixed;
+}
+
+/* Red Pokeball top-border accent on the nav */
+[data-theme="pokemon"] .nav {
+  border-bottom-color: var(--coral);
+}
+
+[data-theme="pokemon"] .nav-logo-icon {
+  background: linear-gradient(180deg, var(--coral) 0 48%, #ffffff 52% 100%);
+  border: 2px solid var(--text-dark);
+}
+
+[data-theme="pokemon"] ::-webkit-scrollbar-thumb { background: var(--coral); }
+[data-theme="pokemon"] ::-webkit-scrollbar-thumb:hover { background: var(--coral-dark); }
+
+/* Pokemon-tinted hero gradient on the landing page */
+[data-theme="pokemon"] .hero {
+  background: linear-gradient(160deg, #FFF6D6 0%, #FFE9E9 40%, #E6ECFF 80%, #F1E6FF 100%);
+}
+
+/* Decorative Pokeball badge in the corner of every welcome banner */
+[data-theme="pokemon"] .level-welcome {
+  position: relative;
+}
+
+[data-theme="pokemon"] .level-welcome::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--text-dark);
+  background:
+    radial-gradient(circle at 50% 50%, #ffffff 0 4px, var(--text-dark) 4px 6px, transparent 6px),
+    linear-gradient(var(--coral) 0 calc(50% - 2px), var(--text-dark) calc(50% - 2px) calc(50% + 2px), #ffffff calc(50% + 2px) 100%);
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  [data-theme="pokemon"] .level-welcome::after { top: 12px; right: 12px; }
+}
+
+/* ============================================================
+   THEME SWITCHER CONTROL
+   ============================================================ */
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-fun);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  background: var(--yellow-light);
+  border: 2px solid var(--yellow);
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-bounce);
+  white-space: nowrap;
+}
+
+.theme-switch:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-switch .theme-switch-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.theme-switch-mobile {
+  width: 100%;
+  background: var(--yellow-light);
+  border: 2px solid var(--yellow);
+  color: var(--text-dark);
+  font-family: var(--font-fun);
+  font-weight: 700;
+}
+
+.theme-switch-mobile .theme-switch-icon { font-size: 1.1rem; }
+
+@media (max-width: 900px) {
+  .theme-switch { display: none; }
+}
+
 /* === RESET & BASE === */
 *, *::before, *::after {
   box-sizing: border-box;
