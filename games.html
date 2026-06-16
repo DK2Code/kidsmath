@@ -315,6 +315,16 @@
     <p style="font-size:0.9rem;color:var(--text-body);margin-bottom:8px;">Games stay matched to learned skills. Select a level first, then play only age-appropriate challenges.</p>
     <p id="game-level-status" style="font-family:var(--font-fun);font-size:0.82rem;color:var(--text-light);margin-bottom:10px;">No level selected yet.</p>
 
+    <div style="margin-bottom:12px;">
+      <label for="game-selection-mode" style="display:block;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-light);margin-bottom:6px;text-transform:uppercase;">Selection Mode</label>
+      <select id="game-selection-mode" class="game-filter">
+        <option value="single">One specific level only</option>
+        <option value="mix">Mix selected levels</option>
+        <option value="unlocked">All unlocked levels combined</option>
+        <option value="all">Unlock all levels</option>
+      </select>
+    </div>
+
     <div id="game-level-choices" class="level-choice-grid"></div>
 
     <div class="game-filters">
@@ -526,6 +536,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const levelStatus = document.getElementById('game-level-status');
+  const modeSelect = document.getElementById('game-selection-mode');
   const levelChoices = document.getElementById('game-level-choices');
   const topicFilter = document.getElementById('game-filter-topic');
   const diffFilter = document.getElementById('game-filter-difficulty');
@@ -544,7 +555,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const state = {
+    mode: localStorage.getItem('numland_game_mode') || 'single',
+    selectedLevels: JSON.parse(localStorage.getItem('numland_selected_levels') || '[1]'),
     level: null,
+    sessionLevel: null,
     filteredGameIds: [...gameIds],
     gamesForLevel: [],
     recentGames: JSON.parse(localStorage.getItem('numland_recent_games') || '[]'),
@@ -553,6 +567,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const storedLevel = localStorage.getItem('numland_selected_level');
   if (storedLevel) {
     state.level = parseInt(storedLevel, 10);
+  }
+  if (!Array.isArray(state.selectedLevels) || !state.selectedLevels.length) state.selectedLevels = [state.level || 1];
+  state.selectedLevels = state.selectedLevels.map(n => parseInt(n, 10)).filter(n => n >= 1 && n <= 4);
+  if (!state.selectedLevels.length) state.selectedLevels = [1];
+  if (!state.level) state.level = state.selectedLevels[0] || 1;
+
+  function saveSelectionState() {
+    localStorage.setItem('numland_game_mode', state.mode);
+    localStorage.setItem('numland_selected_levels', JSON.stringify(state.selectedLevels));
+  }
+
+  function getUnlockedLevelsArray() {
+    const unlocked = window.getUnlockedLevel ? window.getUnlockedLevel() : 1;
+    return Array.from({ length: unlocked }, (_, index) => index + 1);
+  }
+
+  function getActiveLevels() {
+    if (state.mode === 'all') return [1, 2, 3, 4];
+    if (state.mode === 'unlocked') return getUnlockedLevelsArray();
+    if (state.mode === 'mix') return state.selectedLevels.length ? [...new Set(state.selectedLevels)] : [1];
+    return [state.selectedLevels[0] || 1];
+  }
+
+  function pickSessionLevel() {
+    const activeLevels = getActiveLevels();
+    const level = activeLevels[Math.floor(Math.random() * activeLevels.length)] || 1;
+    state.sessionLevel = level;
+    state.level = level;
+    saveSelectionState();
+    return level;
+  }
+
+  function ensureSessionLevel() {
+    const activeLevels = getActiveLevels();
+    if (!activeLevels.length) return 1;
+    if (!state.sessionLevel || !activeLevels.includes(state.sessionLevel)) {
+      return pickSessionLevel();
+    }
+    return state.sessionLevel;
   }
 
   function saveRecent(gameId) {
@@ -581,20 +634,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!levelChoices || !window.NUMLAND_LEVELS) return;
     levelChoices.innerHTML = '';
     const unlocked = window.getUnlockedLevel ? window.getUnlockedLevel() : 1;
+    const activeLevels = new Set(getActiveLevels());
 
     Object.values(window.NUMLAND_LEVELS).forEach(level => {
       const card = document.createElement('button');
       card.className = 'level-choice';
-      if (state.level === level.id) card.classList.add('active');
-      if (level.id > unlocked) card.classList.add('locked');
+      if (activeLevels.has(level.id)) card.classList.add('active');
+      if (state.mode !== 'all' && level.id > unlocked) card.classList.add('locked');
       card.type = 'button';
       card.innerHTML = `${level.icon}<br><span style="font-size:0.8rem;">${level.label}</span><br><span style="font-size:0.72rem;color:var(--text-light);">${level.ageGroup}</span>`;
       card.addEventListener('click', () => {
-        if (level.id > unlocked) {
+        if (state.mode !== 'all' && level.id > unlocked) {
           showToast('This level is locked for now. Keep practicing to unlock it!', 'info');
           return;
         }
-        state.level = window.setSelectedLevel ? window.setSelectedLevel(level.id) : level.id;
+        if (state.mode === 'single') {
+          state.selectedLevels = [level.id];
+          state.level = level.id;
+        } else if (state.mode === 'mix') {
+          if (state.selectedLevels.includes(level.id)) {
+            state.selectedLevels = state.selectedLevels.filter(item => item !== level.id);
+          } else {
+            state.selectedLevels.push(level.id);
+          }
+          if (!state.selectedLevels.length) state.selectedLevels = [level.id];
+          state.level = state.selectedLevels[0];
+        } else if (state.mode === 'unlocked') {
+          state.selectedLevels = getUnlockedLevelsArray();
+          state.level = state.selectedLevels[0] || 1;
+        } else {
+          state.selectedLevels = [1, 2, 3, 4];
+          state.level = level.id;
+        }
+        saveSelectionState();
         applyLevelAndFilters();
         playSound('click');
       });
@@ -603,9 +675,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function buildFilterOptions() {
-    if (!state.level) return;
+    const activeLevels = getActiveLevels();
+    if (!activeLevels.length) return;
 
-    const levelGames = window.getGamesForLevel ? window.getGamesForLevel(state.level) : [];
+    const levelGames = activeLevels.flatMap(level => window.getGamesForLevel ? window.getGamesForLevel(level) : []);
     state.gamesForLevel = levelGames;
 
     const topics = Array.from(new Set(levelGames.map(g => g.mathConcept)));
@@ -688,13 +761,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateGameStatus() {
-    if (!state.level || !window.NUMLAND_LEVELS?.[state.level]) {
-      levelStatus.textContent = 'No level selected yet. Choose a level to unlock matched games.';
+    const activeLevels = getActiveLevels();
+    if (!activeLevels.length || !window.NUMLAND_LEVELS?.[activeLevels[0]]) {
+      levelStatus.textContent = 'No level selected yet. Choose one or more levels to unlock matched games.';
       document.querySelectorAll('.activity-panel').forEach(panel => panel.style.opacity = '0.5');
       return;
     }
-    const meta = window.NUMLAND_LEVELS[state.level];
-    levelStatus.textContent = `${meta.icon} ${meta.label} selected: ${meta.message}`;
+    const meta = window.NUMLAND_LEVELS[activeLevels[0]];
+    const levelText = activeLevels.length === 1 ? meta.label : `Levels ${activeLevels.join(', ')}`;
+    levelStatus.textContent = `${meta.icon} ${levelText} selected: ${meta.message}`;
     document.querySelectorAll('.activity-panel').forEach(panel => panel.style.opacity = '1');
   }
 
@@ -703,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyLevelAndFilters() {
+    if (modeSelect) modeSelect.value = state.mode;
     buildLevelChoices();
     updateGameStatus();
     if (state.level) buildFilterOptions();
@@ -712,13 +788,30 @@ document.addEventListener('DOMContentLoaded', () => {
     resetGamesForLevel();
   }
 
+  modeSelect?.addEventListener('change', () => {
+    state.mode = modeSelect.value;
+    if (state.mode === 'single') {
+      state.selectedLevels = [state.selectedLevels[0] || state.level || 1];
+    } else if (state.mode === 'mix') {
+      state.selectedLevels = [...new Set(state.selectedLevels.length ? state.selectedLevels : [state.level || 1])];
+    } else if (state.mode === 'unlocked') {
+      state.selectedLevels = getUnlockedLevelsArray();
+    } else {
+      state.selectedLevels = [1, 2, 3, 4];
+    }
+    state.sessionLevel = null;
+    state.level = getActiveLevels()[0] || 1;
+    saveSelectionState();
+    applyLevelAndFilters();
+  });
+
   [topicFilter, diffFilter, ageFilter, recentFilter, recommendedFilter].forEach(el => {
     el?.addEventListener('change', applyFilters);
   });
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      if (!state.level) {
+      if (!getActiveLevels().length) {
         showToast('Choose a learning level first so games match what your child has learned.', 'info');
         return;
       }
@@ -737,18 +830,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('quiz-best').textContent = quizBest;
 
   function generateQuizQuestion() {
-    if (!state.level) return { q: 'Choose a level first', answer: 1, options: [1, 2, 3, 4] };
+    const level = ensureSessionLevel();
+    if (!level) return { q: 'Choose a level first', answer: 1, options: [1, 2, 3, 4] };
 
     let q = '';
     let answer = 0;
     let wrong = [];
 
-    if (state.level === 1) {
+    if (level === 1) {
       const n = Math.floor(Math.random() * 9) + 1;
       answer = n + 1;
       q = `What comes after ${n}?`;
       wrong = [n - 1, n, n + 2].filter(v => v > 0);
-    } else if (state.level === 2) {
+    } else if (level === 2) {
       const mode = Math.random() < 0.55 ? 'add' : 'sub';
       if (mode === 'add') {
         const a = Math.floor(Math.random() * 9) + 1;
@@ -762,7 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
         q = `${a} - ${b} = ?`;
       }
       wrong = [answer - 1, answer + 1, answer + 2].filter(v => v >= 0);
-    } else if (state.level === 3) {
+    } else if (level === 3) {
       const mode = ['add', 'mult', 'place'][Math.floor(Math.random() * 3)];
       if (mode === 'add') {
         const a = Math.floor(Math.random() * 40) + 10;
@@ -810,7 +904,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadQuizQuestion() {
-    if (!state.level) return;
+    if (!getActiveLevels().length) return;
     quizCurrent = generateQuizQuestion();
     document.getElementById('quiz-question').textContent = quizCurrent.q;
     document.getElementById('quiz-result').textContent = '';
@@ -877,10 +971,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('quiz-start')?.addEventListener('click', () => {
-    if (!state.level) {
+    if (!getActiveLevels().length) {
       showToast('Choose a level first.', 'info');
       return;
     }
+    pickSessionLevel();
     saveRecent('game-quiz');
     quizActive = true;
     quizScore = 0;
@@ -904,24 +999,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function buildFlashCards(type) {
     flashCards = [];
-    if (state.level === 1 || type === 'count') {
+    const level = ensureSessionLevel();
+    if (level === 1 || type === 'count') {
       for (let i = 1; i <= 10; i++) {
         flashCards.push({ q: `What comes after ${i}?`, a: i + 1, fact: `After ${i} comes ${i + 1}.` });
       }
     } else if (type === 'add') {
-      for (let a = 1; a <= (state.level >= 3 ? 12 : 10); a++) {
-        for (let b = 1; b <= (state.level >= 3 ? 12 : 10); b++) {
+      for (let a = 1; a <= (level >= 3 ? 12 : 10); a++) {
+        for (let b = 1; b <= (level >= 3 ? 12 : 10); b++) {
           flashCards.push({ q: `${a} + ${b}`, a: a + b, fact: `${a} + ${b} = ${a + b}` });
         }
       }
     } else if (type === 'sub') {
-      for (let a = 3; a <= (state.level >= 3 ? 20 : 12); a++) {
+      for (let a = 3; a <= (level >= 3 ? 20 : 12); a++) {
         for (let b = 1; b < a; b++) {
           flashCards.push({ q: `${a} - ${b}`, a: a - b, fact: `${a} - ${b} = ${a - b}` });
         }
       }
     } else if (type === 'mult') {
-      const max = state.level >= 4 ? 12 : 6;
+      const max = level >= 4 ? 12 : 6;
       for (let a = 2; a <= max; a++) {
         for (let b = 2; b <= max; b++) {
           flashCards.push({ q: `${a} × ${b}`, a: a * b, fact: `${a} × ${b} = ${a * b}` });
@@ -956,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
       3: ['add', 'sub', 'mult'],
       4: ['mult', 'div'],
     };
-    const allowed = allowedByLevel[state.level || 1];
+    const allowed = allowedByLevel[ensureSessionLevel() || 1];
     const btnMap = [
       { id: 'add', label: '➕ Addition' },
       { id: 'sub', label: '➖ Subtraction' },
@@ -1037,8 +1133,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const stepByLevel = { 1: 1, 2: 1, 3: 2, 4: 3 };
 
-    bubbleStep = stepByLevel[state.level || 1];
-    const opts = optionsByLevel[state.level || 1];
+    const level = ensureSessionLevel();
+    bubbleStep = stepByLevel[level || 1];
+    const opts = optionsByLevel[level || 1];
     select.innerHTML = '';
     opts.forEach((value, index) => {
       const opt = document.createElement('option');
@@ -1108,10 +1205,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('bubble-start')?.addEventListener('click', () => {
-    if (!state.level) {
+    if (!getActiveLevels().length) {
       showToast('Choose a level first.', 'info');
       return;
     }
+    pickSessionLevel();
     saveRecent('game-bubble');
     bubbleActive = true;
     spawnBubbles();
@@ -1140,7 +1238,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let countedItems = 0;
 
   function loadChallenge() {
-    if (!state.level) return;
+    const level = ensureSessionLevel();
+    if (!level) return;
     const emojiSet = challengeEmojis[Math.floor(Math.random() * challengeEmojis.length)];
     const emoji = emojiSet[Math.floor(Math.random() * emojiSet.length)];
 
@@ -1150,7 +1249,7 @@ document.addEventListener('DOMContentLoaded', () => {
       3: [10, 24],
       4: [12, 30],
     };
-    const [min, max] = ranges[state.level] || [3, 10];
+    const [min, max] = ranges[level] || [3, 10];
     const count = Math.floor(Math.random() * (max - min + 1)) + min;
 
     challengeAnswer = count;
@@ -1214,10 +1313,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('challenge-new')?.addEventListener('click', () => {
-    if (!state.level) {
+    if (!getActiveLevels().length) {
       showToast('Choose a level first.', 'info');
       return;
     }
+    pickSessionLevel();
     saveRecent('game-count');
     loadChallenge();
     playSound('click');
@@ -1232,12 +1332,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('quiz-score').textContent = '0';
     document.getElementById('quiz-start').style.display = 'inline-flex';
     document.getElementById('quiz-next').style.display = 'none';
-    document.getElementById('quiz-question').textContent = state.level ? `Ready for ${window.NUMLAND_LEVELS[state.level].label}!` : 'Choose level first';
+    const activeLevels = getActiveLevels();
+    document.getElementById('quiz-question').textContent = activeLevels.length ? `Ready for Levels ${activeLevels.join(', ')}!` : 'Choose level first';
     document.getElementById('quiz-options').innerHTML = '';
     document.getElementById('quiz-result').textContent = '';
 
     challengeScore = 0;
     document.getElementById('count-challenge-score').textContent = '0';
+    state.sessionLevel = null;
     loadChallenge();
 
     document.getElementById('bubble-container').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';

@@ -645,32 +645,32 @@ const initAdditionActivity = (containerId) => {
 // PATTERN RECOGNITION GAME
 // ============================================================
 const initPatternGame = (containerId) => {
-  const container = document.getElementById(containerId);
+  const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
   if (!container) return;
 
   const patterns = [
-    ['🔴', '🔵', '🔴', '🔵', '❓', '🔵'],
-    ['⭐', '🌙', '⭐', '🌙', '⭐', '❓'],
-    ['🐱', '🐶', '🐱', '❓', '🐱', '🐶'],
-    ['🔺', '🔺', '⬛', '🔺', '🔺', '❓'],
-    ['🌺', '🍀', '🌺', '🍀', '❓', '🍀'],
+    { sequence: ['🔴', '🔵', '🔴', '🔵', '❓', '🔵'], answer: '🔴' },
+    { sequence: ['⭐', '🌙', '⭐', '🌙', '⭐', '❓'], answer: '🌙' },
+    { sequence: ['🐱', '🐶', '🐱', '❓', '🐱', '🐶'], answer: '🐶' },
+    { sequence: ['🔺', '🔺', '⬛', '🔺', '🔺', '❓'], answer: '⬛' },
+    { sequence: ['🌺', '🍀', '🌺', '🍀', '❓', '🍀'], answer: '🌺' },
   ];
 
   let current = null;
   let blankIdx = null;
-  const display = container.querySelector('.pattern-row');
-  const choices = container.querySelector('.pattern-choices');
+  const display = container.querySelector('#pattern-display') || container.querySelector('.pattern-row');
+  const choices = container.querySelector('#pattern-choices') || container.querySelector('.pattern-choices');
   const feedback = container.querySelector('.feedback');
   const nextBtn = container.querySelector('.next-pattern-btn');
 
   const loadPattern = () => {
     current = patterns[Math.floor(Math.random() * patterns.length)];
-    blankIdx = current.indexOf('❓');
-    const answer = current[blankIdx];
+    blankIdx = current.sequence.indexOf('❓');
+    const answer = current.answer;
 
     if (display) {
       display.innerHTML = '';
-      current.forEach((item, i) => {
+      current.sequence.forEach((item, i) => {
         const el = document.createElement('div');
         el.className = 'pattern-item' + (item === '❓' ? ' pattern-blank' : '');
         el.textContent = item === '❓' ? '?' : item;
@@ -697,8 +697,10 @@ const initPatternGame = (containerId) => {
         btn.addEventListener('click', () => {
           if (opt === answer) {
             // Update the blank
-            display.children[blankIdx].textContent = answer;
-            display.children[blankIdx].classList.remove('pattern-blank');
+            if (display && display.children[blankIdx]) {
+              display.children[blankIdx].textContent = answer;
+              display.children[blankIdx].classList.remove('pattern-blank');
+            }
             if (feedback) {
               feedback.className = 'feedback show success';
               feedback.innerHTML = '<span class="feedback-icon">🌟</span> Perfect pattern! You\'re a pattern expert!';
@@ -1164,11 +1166,11 @@ const initGeometryExplorer = (containerId) => {
 // COMPARISON GAME (More, Less, Equal)
 // ============================================================
 const initComparisonGame = (containerId) => {
-  const container = document.getElementById(containerId);
+  const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
   if (!container) return;
 
-  const left = container.querySelector('.compare-left');
-  const right = container.querySelector('.compare-right');
+  const left = container.querySelector('#compare-left') || container.querySelector('.compare-left');
+  const right = container.querySelector('#compare-right') || container.querySelector('.compare-right');
   const feedback = container.querySelector('.feedback');
   const btns = container.querySelectorAll('.compare-btn');
   const newBtn = container.querySelector('.new-compare-btn');
@@ -1251,7 +1253,7 @@ const initComparisonGame = (containerId) => {
 // WORD PROBLEM SOLVER
 // ============================================================
 const initWordProblem = (containerId) => {
-  const container = document.getElementById(containerId);
+  const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
   if (!container) return;
 
   const problems = [
@@ -1263,13 +1265,13 @@ const initWordProblem = (containerId) => {
   ];
 
   let current = null;
-  const textEl = container.querySelector('.word-problem-text');
+  const textEl = document.getElementById('word-problem-text');
   const input = container.querySelector('.math-input');
   const checkBtn = container.querySelector('.check-btn');
   const hintBtn = container.querySelector('.hint-btn');
   const nextBtn = container.querySelector('.next-problem-btn');
   const feedback = container.querySelector('.feedback');
-  const hintEl = container.querySelector('.hint-text');
+  const hintEl = document.getElementById('hint-text');
 
   const load = () => {
     current = problems[Math.floor(Math.random() * problems.length)];
@@ -1320,7 +1322,7 @@ const initWordProblem = (containerId) => {
 // MATH PUZZLE (Number Bonds)
 // ============================================================
 const initNumberBonds = (containerId, total = 10) => {
-  const container = document.getElementById(containerId);
+  const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
   if (!container) return;
 
   const pairs = [];
@@ -1328,7 +1330,7 @@ const initNumberBonds = (containerId, total = 10) => {
     pairs.push([i, total - i]);
   }
 
-  const targetDisplay = container.querySelector('.bond-target');
+  const targetDisplay = container.querySelector('#bond-target') || container.querySelector('#bond-display-target') || container.querySelector('.bond-target');
   const input1 = container.querySelector('.bond-input-1');
   const input2 = container.querySelector('.bond-input-2');
   const checkBtn = container.querySelector('.check-bond-btn');
@@ -1347,9 +1349,12 @@ const initNumberBonds = (containerId, total = 10) => {
 
   if (checkBtn) {
     checkBtn.addEventListener('click', () => {
-      const v1 = parseInt(input1?.value);
-      const v2 = parseInt(input2?.value);
-      if (isNaN(v1) || isNaN(v2)) { showToast('Fill in both boxes!', 'info'); return; }
+      const raw1 = input1?.value?.trim() ?? '';
+      const raw2 = input2?.value?.trim() ?? '';
+      if (!raw1 || !raw2) { showToast('Fill in both boxes!', 'info'); return; }
+      const v1 = parseInt(raw1, 10);
+      const v2 = parseInt(raw2, 10);
+      if (Number.isNaN(v1) || Number.isNaN(v2)) { showToast('Fill in both boxes with numbers!', 'info'); return; }
       if (v1 + v2 === total) {
         if (feedback) {
           feedback.className = 'feedback show success';

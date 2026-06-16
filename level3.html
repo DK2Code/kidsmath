@@ -609,7 +609,75 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── WORD PROBLEMS ──
-  initWordProblem(document.getElementById('act3-word'));
+  (function initLevel3WordProblems() {
+    const container = document.getElementById('act3-word');
+    if (!container) return;
+
+    const problems = [
+      { text: 'Sam has 3 red apples and 4 green apples. How many apples does Sam have in total?', answer: 7, hint: 'Add the two groups together.' },
+      { text: 'There are 8 birds on a branch. 3 birds fly away. How many birds are left?', answer: 5, hint: 'Take away the birds that left.' },
+      { text: 'Maya has 5 balloons. Jake gives her 4 more. How many balloons does Maya have now?', answer: 9, hint: 'Count all the balloons.' },
+      { text: 'A cookie jar has 10 cookies. The kids eat 6. How many cookies are left?', answer: 4, hint: 'Subtract the cookies that were eaten.' },
+      { text: 'There are 2 cats and 5 dogs in the park. How many animals are there altogether?', answer: 7, hint: 'Count all the animals together.' },
+    ];
+
+    const textEl = document.getElementById('word-problem-text');
+    const input = container.querySelector('.math-input');
+    const checkBtn = container.querySelector('.check-btn');
+    const hintBtn = container.querySelector('.hint-btn');
+    const nextBtn = container.querySelector('.next-problem-btn');
+    const feedback = document.getElementById('word-feedback');
+    const hintEl = document.getElementById('hint-text');
+
+    let current = problems[Math.floor(Math.random() * problems.length)];
+
+    function renderProblem() {
+      current = problems[Math.floor(Math.random() * problems.length)];
+      if (textEl) textEl.textContent = current.text;
+      if (input) { input.value = ''; input.className = 'math-input'; }
+      if (feedback) feedback.className = 'feedback';
+      if (hintEl) hintEl.style.display = 'none';
+    }
+
+    checkBtn?.addEventListener('click', () => {
+      const val = parseInt(input?.value, 10);
+      if (Number.isNaN(val)) {
+        showToast('Write your answer in the box!', 'info');
+        return;
+      }
+      if (val === current.answer) {
+        if (input) input.className = 'math-input correct';
+        if (feedback) {
+          feedback.className = 'feedback show success';
+          feedback.innerHTML = `<span class="feedback-icon">🧠</span> Amazing thinking! The answer is ${current.answer}!`;
+        }
+        playSound('correct');
+        Progress.addStars(2);
+      } else {
+        if (input) input.className = 'math-input wrong';
+        if (feedback) {
+          feedback.className = 'feedback show error';
+          feedback.innerHTML = '<span class="feedback-icon">😊</span> Not quite! Read the problem again — you\'ve got this!';
+        }
+        gentleEncourage();
+      }
+    });
+
+    hintBtn?.addEventListener('click', () => {
+      if (!hintEl) return;
+      hintEl.textContent = `💡 Hint: ${current.hint}`;
+      hintEl.style.display = 'block';
+      hintEl.style.animation = 'fadeSlideIn 0.3s ease';
+      playSound('click');
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      renderProblem();
+      playSound('click');
+    });
+
+    renderProblem();
+  })();
 
   // ── NUMBER BONDS ──
   const bondsContainer = document.getElementById('act3-bonds');
