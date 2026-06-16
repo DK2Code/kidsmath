@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 4 — Math Adventurers | NumLand 🗺️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .activity-tab.active { background: var(--purple); border-color: var(--purple-dark); color: white; }
+
+    .mult-grid { display:grid; gap:3px; max-width:600px; margin:0 auto; }
+    .mult-cell {
+      padding:6px 2px; text-align:center; border-radius:6px;
+      font-family:var(--font-fun); font-weight:700; font-size:0.82rem;
+      cursor:pointer; transition:all 0.2s; border:1px solid #eee;
+      background:white;
+    }
+    .mult-cell.header-row { background:var(--blue-light); color:var(--blue-dark); }
+    .mult-cell.header-col { background:var(--green-light); color:var(--green-dark); }
+    .mult-cell.corner { background:var(--yellow); color:var(--text-dark); border:none; }
+    .mult-cell:hover:not(.header-row):not(.header-col):not(.corner) { background:var(--yellow); transform:scale(1.12); z-index:1; position:relative; }
+
+    /* Fraction SVGs */
+    .frac-grid {
+      display:flex;
+      flex-wrap:wrap;
+      gap:var(--space-lg);
+      justify-content:center;
+      padding:var(--space-lg);
+    }
+
+    .frac-visual {
+      text-align:center;
+      cursor:pointer;
+      transition:transform var(--transition-bounce);
+    }
+    .frac-visual:hover { transform:scale(1.08); }
+    .frac-visual.selected svg circle, .frac-visual.selected svg path { stroke-width:4; }
+
+    .frac-info-box {
+      background:var(--purple-light);
+      border:3px solid var(--purple);
+      border-radius:var(--radius-xl);
+      padding:var(--space-lg);
+      text-align:center;
+      margin-top:var(--space-md);
+      min-height:80px;
+      display:none;
+    }
+
+    /* Geometry shapes */
+    .geo-shapes-grid {
+      display:flex;
+      flex-wrap:wrap;
+      gap:var(--space-md);
+      justify-content:center;
+      padding:var(--space-lg);
+    }
+
+    .geo-shape {
+      width:110px;
+      height:110px;
+      background:white;
+      border-radius:var(--radius-lg);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all var(--transition-bounce);
+      box-shadow:var(--shadow-sm);
+      border:3px solid var(--purple-light);
+      gap:6px;
+    }
+    .geo-shape:hover { transform:scale(1.1); box-shadow:var(--shadow-md); border-color:var(--purple); }
+    .geo-shape.selected { background:var(--purple-light); border-color:var(--purple-dark); transform:scale(1.08); }
+
+    .geo-shape-name {
+      font-family:var(--font-fun);
+      font-weight:700;
+      font-size:0.78rem;
+      color:var(--text-dark);
+      text-align:center;
+    }
+
+    .geo-info {
+      background:var(--purple-light);
+      border:2px solid var(--purple);
+      border-radius:var(--radius-xl);
+      padding:var(--space-lg);
+      text-align:center;
+      margin-top:var(--space-md);
+      min-height:80px;
+      display:none;
+    }
+
+    /* Division */
+    .division-visual {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:var(--space-md);
+      padding:var(--space-xl);
+      background:var(--bg-cream);
+      border-radius:var(--radius-lg);
+      margin-bottom:var(--space-lg);
+    }
+
+    .division-objects {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:center;
+      max-width:400px;
+    }
+
+    .division-groups {
+      display:flex;
+      gap:var(--space-md);
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    .division-group {
+      background:white;
+      border:3px dashed var(--purple-light);
+      border-radius:var(--radius-lg);
+      padding:var(--space-md);
+      min-width:80px;
+      min-height:80px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      align-items:center;
+      justify-content:center;
+      transition:all var(--transition-normal);
+      font-size:1.5rem;
+    }
+
+    .puzzle-grid {
+      display:grid;
+      grid-template-columns:repeat(3,80px);
+      gap:8px;
+      justify-content:center;
+      margin-bottom:var(--space-lg);
+    }
+
+    .puzzle-cell {
+      width:80px;
+      height:80px;
+      background:white;
+      border:3px solid var(--purple-light);
+      border-radius:var(--radius-md);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:var(--font-display);
+      font-size:1.8rem;
+      color:var(--text-dark);
+      cursor:pointer;
+      transition:all var(--transition-bounce);
+    }
+
+    .puzzle-cell.empty {
+      background:var(--purple-light);
+      border-style:dashed;
+      color:var(--text-light);
+      font-size:1rem;
+    }
+
+    .puzzle-cell:hover:not(.given) { transform:scale(1.05); border-color:var(--purple); }
+    .puzzle-cell.given { background:var(--purple-light); cursor:default; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🦉</div><span class="nav-logo-text">Num<span>Land</span></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link active">Level 4</a></li>
+    <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+    <li><a href="rewards.html" class="nav-link">⭐ Rewards</a></li>
+  </ul>
+  <a href="rewards.html" class="btn btn-purple btn-sm nav-btn">⭐ <span data-star-count>0</span> Stars</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="level1.html" class="nav-link">🌟 Level 1</a>
+  <a href="level2.html" class="nav-link">🌱 Level 2</a>
+  <a href="level3.html" class="nav-link">🏗️ Level 3</a>
+  <a href="level4.html" class="nav-link active">🗺️ Level 4</a>
+  <a href="games.html" class="nav-link">🎮 Games</a>
+  <a href="rewards.html" class="nav-link">⭐ Rewards</a>
+</nav>
+
+<header class="page-header level4-bg">
+  <div class="breadcrumb">
+    <a href="index.html">🏠 Home</a> <span>›</span> Level 4
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:white;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;padding:6px 16px;border-radius:50px;margin-bottom:12px;">🌟🌟🌟 Ages 9–10</div>
+  <h1 class="page-header-title">🗺️ Math Adventurers</h1>
+  <p class="page-header-sub">Conquer multiplication, explore fractions with pizza and shapes, learn geometry, and solve math puzzles like a true adventurer!</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">✖️ Multiplication</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🍕 Fractions</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">📐 Geometry</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🧩 Puzzles</div>
+  </div>
+</header>
+
+<main class="activity-container">
+
+  <div class="level-welcome reveal" style="background:linear-gradient(135deg,var(--purple-light),#E8D0FF);border:2px solid var(--purple);">
+    <div class="level-welcome-icon">🦉</div>
+    <div class="level-welcome-text">
+      <h2>Welcome, Adventurer! 🗺️</h2>
+      <p>You've reached the ultimate level! Explore the multiplication table, slice pizza into fractions, discover geometry shapes, divide groups, and tackle brain-bending puzzles. You're ready for anything! 🌟</p>
+    </div>
+  </div>
+
+  <div class="activity-tabs reveal" role="tablist">
+    <button class="activity-tab active" data-tab="act4-mult">✖️ Multiplication</button>
+    <button class="activity-tab" data-tab="act4-fractions">🍕 Fractions</button>
+    <button class="activity-tab" data-tab="act4-geometry">📐 Geometry</button>
+    <button class="activity-tab" data-tab="act4-division">➗ Division</button>
+    <button class="activity-tab" data-tab="act4-puzzle">🧩 Puzzle</button>
+  </div>
+
+  <!-- ── MULTIPLICATION ── -->
+  <div class="activity-panel active" id="act4-mult">
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">✖️ Multiplication Table!</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Hover over any cell</strong> to see its row and column light up! Click a cell to see the multiplication fact!</span>
+      </div>
+
+      <div class="mult-grid" id="mult-grid-container"></div>
+
+      <div id="mult-fact" style="text-align:center;margin-top:var(--space-lg);font-family:var(--font-display);font-size:1.8rem;color:var(--purple-dark);min-height:44px;" aria-live="polite"></div>
+    </div>
+
+    <!-- Multiplication practice -->
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">✖️ Multiplication Practice!</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Can you solve it?</strong> Use the table above for help!</span>
+      </div>
+
+      <div style="text-align:center;margin-bottom:var(--space-lg);">
+        <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-md);flex-wrap:wrap;">
+          <div style="font-family:var(--font-display);font-size:3rem;color:var(--text-dark);" id="mult-a">?</div>
+          <div style="font-family:var(--font-display);font-size:2.5rem;color:var(--purple);">×</div>
+          <div style="font-family:var(--font-display);font-size:3rem;color:var(--text-dark);" id="mult-b">?</div>
+          <div style="font-family:var(--font-display);font-size:2.5rem;color:var(--text-light);">=</div>
+          <input type="number" class="math-input" id="mult-input" style="width:88px;height:88px;font-size:2.5rem;" placeholder="?" min="0" max="100" aria-label="Multiplication answer" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-purple" id="mult-check">✓ Check</button>
+        <button class="btn btn-secondary" id="mult-new">🔀 New Problem</button>
+      </div>
+
+      <div class="feedback" id="mult-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ── FRACTIONS ── -->
+  <div class="activity-panel" id="act4-fractions">
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">🍕 Fraction Explorer!</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Click each pizza/shape</strong> to learn about that fraction! Fractions show equal parts of a whole!</span>
+      </div>
+
+      <div class="frac-grid" id="frac-grid">
+
+        <!-- Whole -->
+        <div class="frac-visual" data-fraction="whole" onclick="showFraction(this)">
+          <svg width="110" height="110" viewBox="0 0 110 110" aria-label="Whole circle">
+            <circle cx="55" cy="55" r="50" fill="#FF6B6B" stroke="#E84040" stroke-width="3"/>
+            <text x="55" y="62" text-anchor="middle" fill="white" font-family="Fredoka One" font-size="22">1</text>
+          </svg>
+          <div class="frac-label" style="font-family:var(--font-display);font-size:1.3rem;color:var(--text-dark);">1 Whole</div>
+        </div>
+
+        <!-- Half -->
+        <div class="frac-visual" data-fraction="half" onclick="showFraction(this)">
+          <svg width="110" height="110" viewBox="0 0 110 110" aria-label="Half circle">
+            <circle cx="55" cy="55" r="50" fill="#FFE0E0" stroke="#E84040" stroke-width="3"/>
+            <path d="M55,5 A50,50 0 0,1 55,105 Z" fill="#FF6B6B"/>
+            <line x1="55" y1="5" x2="55" y2="105" stroke="white" stroke-width="3"/>
+            <text x="70" y="62" text-anchor="middle" fill="white" font-family="Fredoka One" font-size="18">½</text>
+          </svg>
+          <div class="frac-label" style="font-family:var(--font-display);font-size:1.3rem;color:var(--text-dark);">½ Half</div>
+        </div>
+
+        <!-- Third -->
+        <div class="frac-visual" data-fraction="third" onclick="showFraction(this)">
+          <svg width="110" height="110" viewBox="0 0 110 110" aria-label="One third circle">
+            <circle cx="55" cy="55" r="50" fill="#E8F0FF" stroke="#1A6FD4" stroke-width="3"/>
+            <path d="M55,55 L55,5 A50,50 0 0,1 98.3,80 Z" fill="#4D96FF"/>
+            <line x1="55" y1="55" x2="55" y2="5" stroke="white" stroke-width="2"/>
+            <line x1="55" y1="55" x2="98.3" y2="80" stroke="white" stroke-width="2"/>
+            <text x="72" y="44" text-anchor="middle" fill="white" font-family="Fredoka One" font-size="16">⅓</text>
+          </svg>
+          <div class="frac-label" style="font-family:var(--font-display);font-size:1.3rem;color:var(--text-dark);">⅓ Third</div>
+        </div>
+
+        <!-- Quarter -->
+        <div class="frac-visual" data-fraction="quarter" onclick="showFraction(this)">
+          <svg width="110" height="110" viewBox="0 0 110 110" aria-label="One quarter circle">
+            <circle cx="55" cy="55" r="50" fill="#E8F8EA" stroke="#3DA84B" stroke-width="3"/>
+            <path d="M55,55 L55,5 A50,50 0 0,1 105,55 Z" fill="#6BCB77"/>
+            <line x1="55" y1="5" x2="55" y2="105" stroke="white" stroke-width="2"/>
+            <line x1="5" y1="55" x2="105" y2="55" stroke="white" stroke-width="2"/>
+            <text x="75" y="42" text-anchor="middle" fill="white" font-family="Fredoka One" font-size="16">¼</text>
+          </svg>
+          <div class="frac-label" style="font-family:var(--font-display);font-size:1.3rem;color:var(--text-dark);">¼ Quarter</div>
+        </div>
+
+        <!-- Three quarters -->
+        <div class="frac-visual" data-fraction="threequarter" onclick="showFraction(this)">
+          <svg width="110" height="110" viewBox="0 0 110 110" aria-label="Three quarters circle">
+            <circle cx="55" cy="55" r="50" fill="#E8F8EA" stroke="#3DA84B" stroke-width="3"/>
+            <path d="M55,55 L55,5 A50,50 0 1,1 5,55 Z" fill="#6BCB77"/>
+            <line x1="55" y1="5" x2="55" y2="105" stroke="white" stroke-width="2"/>
+            <line x1="5" y1="55" x2="105" y2="55" stroke="white" stroke-width="2"/>
+            <text x="36" y="62" text-anchor="middle" fill="white" font-family="Fredoka One" font-size="16">¾</text>
+          </svg>
+          <div class="frac-label" style="font-family:var(--font-display);font-size:1.3rem;color:var(--text-dark);">¾ Three Quarters</div>
+        </div>
+
+        <!-- Fifth -->
+        <div class="frac-visual" data-fraction="fifth" onclick="showFraction(this)">
+          <svg width="110" height="110" viewBox="0 0 110 110" aria-label="One fifth circle">
+            <circle cx="55" cy="55" r="50" fill="#F3E8FF" stroke="#9B3FE8" stroke-width="3"/>
+            <path d="M55,55 L55,5 A50,50 0 0,1 102.4,34.5 Z" fill="#C77DFF"/>
+            <text x="73" y="36" text-anchor="middle" fill="white" font-family="Fredoka One" font-size="16">⅕</text>
+            <line x1="55" y1="5" x2="55" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+          </svg>
+          <div class="frac-label" style="font-family:var(--font-display);font-size:1.3rem;color:var(--text-dark);">⅕ Fifth</div>
+        </div>
+
+      </div>
+
+      <div class="frac-info-box" id="frac-info"></div>
+    </div>
+
+    <!-- Fraction comparison -->
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">🍕 Which Fraction is Bigger?</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span>Can you tell which fraction is larger? Click your answer!</span>
+      </div>
+
+      <div id="frac-compare-display" style="display:flex;justify-content:center;align-items:center;gap:var(--space-xl);flex-wrap:wrap;margin-bottom:var(--space-lg);">
+        <div id="frac-comp-a" style="text-align:center;"></div>
+        <div style="font-family:var(--font-display);font-size:2rem;color:var(--text-light);">vs</div>
+        <div id="frac-comp-b" style="text-align:center;"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-purple" id="frac-pick-a">Left is Bigger ◀</button>
+        <button class="btn btn-secondary" id="frac-pick-equal">Equal 🟰</button>
+        <button class="btn btn-blue" id="frac-pick-b">▶ Right is Bigger</button>
+        <button class="btn btn-secondary" id="frac-next">🔀 New</button>
+      </div>
+      <div class="feedback" id="frac-compare-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ── GEOMETRY ── -->
+  <div class="activity-panel" id="act4-geometry">
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">📐 Geometry Explorer!</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Click each shape</strong> to discover its properties — sides, angles, and real-world examples!</span>
+      </div>
+
+      <div class="geo-shapes-grid" id="geo-shapes">
+        <div class="geo-shape" data-shape="circle" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="26" fill="#FF6B6B" stroke="#E84040" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Circle</span>
+        </div>
+        <div class="geo-shape" data-shape="triangle" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><polygon points="30,4 56,54 4,54" fill="#6BCB77" stroke="#3DA84B" stroke-width="3" stroke-linejoin="round"/></svg>
+          <span class="geo-shape-name">Triangle</span>
+        </div>
+        <div class="geo-shape" data-shape="square" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><rect x="7" y="7" width="46" height="46" fill="#FFD93D" stroke="#F5B900" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Square</span>
+        </div>
+        <div class="geo-shape" data-shape="rectangle" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><rect x="4" y="14" width="52" height="32" fill="#4D96FF" stroke="#1A6FD4" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Rectangle</span>
+        </div>
+        <div class="geo-shape" data-shape="pentagon" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><polygon points="30,4 56,22 46,52 14,52 4,22" fill="#C77DFF" stroke="#9B3FE8" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Pentagon</span>
+        </div>
+        <div class="geo-shape" data-shape="hexagon" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><polygon points="30,4 54,17 54,43 30,56 6,43 6,17" fill="#FF9E4F" stroke="#D96E1A" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Hexagon</span>
+        </div>
+        <div class="geo-shape" data-shape="rhombus" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><polygon points="30,4 56,30 30,56 4,30" fill="#FF8FAB" stroke="#D45070" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Rhombus</span>
+        </div>
+        <div class="geo-shape" data-shape="trapezoid" role="button" tabindex="0">
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><polygon points="15,10 45,10 56,50 4,50" fill="#A8E6CF" stroke="#4CC98A" stroke-width="3"/></svg>
+          <span class="geo-shape-name">Trapezoid</span>
+        </div>
+      </div>
+
+      <div class="geo-info" id="geo-info"></div>
+    </div>
+  </div>
+
+  <!-- ── DIVISION ── -->
+  <div class="activity-panel" id="act4-division">
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">➗ Division with Sharing!</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Division means sharing equally!</strong> Share the items into equal groups. How many in each group?</span>
+      </div>
+
+      <div class="division-visual" id="div-visual">
+        <p id="div-problem" style="font-family:var(--font-fun);font-weight:700;font-size:1.1rem;color:var(--text-dark);text-align:center;"></p>
+        <div class="division-objects" id="div-objects"></div>
+        <div style="font-family:var(--font-display);font-size:2rem;color:var(--text-light);">÷</div>
+        <div class="division-groups" id="div-groups"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-md);flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <span style="font-family:var(--font-display);font-size:1.5rem;color:var(--text-dark);" id="div-equation">? ÷ ? = ?</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-md);flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <label style="font-family:var(--font-fun);font-weight:700;">Items in each group:</label>
+        <input type="number" class="math-input" id="div-input" style="width:80px;height:80px;font-size:2rem;" placeholder="?" min="0" max="20" aria-label="Division answer" />
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-purple" id="div-check">✓ Check</button>
+        <button class="btn btn-secondary" id="div-new">🔀 New Problem</button>
+      </div>
+
+      <div class="feedback" id="div-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ── PUZZLE ── -->
+  <div class="activity-panel" id="act4-puzzle">
+    <div class="activity-card purple-card">
+      <h2 class="activity-title">🧩 Math Magic Square!</h2>
+      <div class="activity-instruction" style="border-left-color:var(--purple);">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Every row, column, and diagonal</strong> must add up to the same number! Fill in the missing numbers — click a blank cell and enter a number!</span>
+      </div>
+
+      <div id="magic-square-display" style="margin-bottom:var(--space-lg);">
+        <p id="magic-target" style="text-align:center;font-family:var(--font-fun);font-weight:700;color:var(--purple-dark);margin-bottom:var(--space-md);font-size:1.05rem;"></p>
+        <div class="puzzle-grid" id="puzzle-grid"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-purple" id="puzzle-check">✓ Check Magic Square</button>
+        <button class="btn btn-secondary" id="puzzle-new">🔀 New Puzzle</button>
+        <button class="btn btn-secondary" id="puzzle-hint">💡 Hint</button>
+      </div>
+
+      <div class="feedback" id="puzzle-feedback"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--purple-light);margin-top:var(--space-lg);">
+    <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">🏆 You're a Math Adventurer! Incredible work!</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="level3.html" class="btn btn-secondary">← Level 3</a>
+      <a href="rewards.html" class="btn btn-primary">🏆 Collect Your Rewards!</a>
+      <a href="games.html" class="btn btn-purple">🎮 Play Math Games!</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── MULTIPLICATION TABLE ──
+  const grid = document.getElementById('mult-grid-container');
+  const size = 10;
+  if (grid) {
+    grid.style.gridTemplateColumns = `repeat(${size+1}, 1fr)`;
+    for (let r = 0; r <= size; r++) {
+      for (let c = 0; c <= size; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'mult-cell';
+        if (r === 0 && c === 0) { cell.textContent = '×'; cell.classList.add('corner'); }
+        else if (r === 0) { cell.textContent = c; cell.classList.add('header-row'); cell.dataset.col = c; }
+        else if (c === 0) { cell.textContent = r; cell.classList.add('header-col'); cell.dataset.row = r; }
+        else {
+          cell.textContent = r * c;
+          cell.dataset.row = r; cell.dataset.col = c;
+          cell.addEventListener('mouseenter', () => {
+            grid.querySelectorAll(`[data-row="${r}"]`).forEach(e => e.style.background = '#FFF8E1');
+            grid.querySelectorAll(`[data-col="${c}"]`).forEach(e => e.style.background = '#FFF8E1');
+            cell.style.background = 'var(--yellow)';
+          });
+          cell.addEventListener('mouseleave', () => {
+            grid.querySelectorAll('[data-row]').forEach(e => {
+              const er = e.dataset.row; const ec = e.dataset.col;
+              e.style.background = !ec ? 'var(--green-light)' : !er ? 'var(--blue-light)' : 'white';
+            });
+          });
+          cell.addEventListener('click', () => {
+            const fact = document.getElementById('mult-fact');
+            if (fact) { fact.textContent = `${r} × ${c} = ${r*c}`; fact.style.animation='none'; void fact.offsetWidth; fact.style.animation='fadeSlideIn 0.3s ease'; }
+            playSound('select');
+          });
+        }
+        grid.appendChild(cell);
+      }
+    }
+  }
+
+  // Multiplication practice
+  let mA = 0, mB = 0;
+  function newMultProblem() {
+    mA = Math.floor(Math.random() * 10) + 1;
+    mB = Math.floor(Math.random() * 10) + 1;
+    document.getElementById('mult-a').textContent = mA;
+    document.getElementById('mult-b').textContent = mB;
+    const inp = document.getElementById('mult-input');
+    if (inp) { inp.value = ''; inp.className = 'math-input'; inp.style.width='88px'; inp.style.height='88px'; inp.style.fontSize='2.5rem'; }
+    document.getElementById('mult-feedback').className = 'feedback';
+  }
+  document.getElementById('mult-check')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('mult-input')?.value);
+    const fb = document.getElementById('mult-feedback');
+    const inp = document.getElementById('mult-input');
+    if (isNaN(val)) { showToast('Enter your answer!', 'info'); return; }
+    if (val === mA * mB) {
+      inp.className = 'math-input correct';
+      fb.className = 'feedback show success';
+      fb.innerHTML = `<span class="feedback-icon">🌟</span> ${mA} × ${mB} = ${mA*mB}! You're amazing!`;
+      playSound('correct'); Progress.addStars(2);
+    } else {
+      inp.className = 'math-input wrong';
+      fb.className = 'feedback show error';
+      fb.innerHTML = `<span class="feedback-icon">😊</span> Try looking at the table! ${mA} × ${mB} = ?`;
+      gentleEncourage();
+    }
+  });
+  document.getElementById('mult-new')?.addEventListener('click', () => { newMultProblem(); playSound('click'); });
+  document.getElementById('mult-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('mult-check')?.click(); });
+  newMultProblem();
+
+  // ── GEOMETRY ──
+  const geoData = {
+    circle:    { sides: 0, angles: 0, desc: 'No sides or corners! Perfectly round. Examples: wheel, coin, full moon 🌕' },
+    triangle:  { sides: 3, angles: 3, desc: '3 sides and 3 corners (angles). Examples: mountain peak, pizza slice, yield sign ⚠️' },
+    square:    { sides: 4, angles: 4, desc: '4 EQUAL sides and 4 right angles. Examples: window, tile, chessboard square ♟️' },
+    rectangle: { sides: 4, angles: 4, desc: '4 sides with 4 right angles (2 long, 2 short). Examples: door, book, TV screen 📺' },
+    pentagon:  { sides: 5, angles: 5, desc: '5 sides and 5 corners. Examples: US Pentagon building, home plate in baseball ⚾' },
+    hexagon:   { sides: 6, angles: 6, desc: '6 sides and 6 corners. Examples: honeycomb cell 🍯, snowflake shape ❄️' },
+    rhombus:   { sides: 4, angles: 4, desc: '4 equal sides, but not square! Like a diamond shape 💎. Angles are not 90°.' },
+    trapezoid: { sides: 4, angles: 4, desc: '4 sides with only one pair of parallel sides. Like a bread loaf slice 🍞' },
+  };
+
+  document.querySelectorAll('.geo-shape').forEach(shape => {
+    shape.addEventListener('click', function() {
+      document.querySelectorAll('.geo-shape').forEach(s => s.classList.remove('selected'));
+      this.classList.add('selected');
+      const type = this.dataset.shape;
+      const data = geoData[type];
+      const info = document.getElementById('geo-info');
+      if (data && info) {
+        info.style.display = 'block';
+        info.innerHTML = `
+          <strong style="font-family:var(--font-display);font-size:1.3rem;color:var(--purple-dark);">${type.charAt(0).toUpperCase() + type.slice(1)}</strong><br>
+          <span style="color:var(--purple);font-weight:700;font-family:var(--font-fun);">${data.sides === 0 ? 'No sides' : data.sides + ' sides'} • ${data.angles === 0 ? 'No angles' : data.angles + ' angles'}</span><br>
+          <p style="font-size:0.9rem;color:var(--text-body);margin-top:8px;">${data.desc}</p>
+        `;
+        info.style.animation='none'; void info.offsetWidth; info.style.animation='fadeSlideIn 0.3s ease';
+      }
+      playSound('select');
+    });
+    shape.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') shape.click(); });
+  });
+
+  // ── FRACTIONS ──
+  const fracData = {
+    whole:       { title: '1 Whole', desc: 'One whole — the entire thing! Not divided at all. Like a full pizza 🍕', color: '#FF6B6B', value: 1 },
+    half:        { title: '½ Half', desc: 'Cut into 2 EQUAL parts. One half is 1 of those 2 parts. Like splitting a sandwich! 🥪', color: '#FF9E4F', value: 0.5 },
+    third:       { title: '⅓ Third', desc: 'Cut into 3 EQUAL parts. One third is 1 of those 3 parts. Three friends sharing one pizza slice! 🍕', color: '#4D96FF', value: 1/3 },
+    quarter:     { title: '¼ Quarter', desc: 'Cut into 4 EQUAL parts. One quarter is 1 of those 4 parts. Quarter past the hour on a clock! ⏰', color: '#6BCB77', value: 0.25 },
+    threequarter:{ title: '¾ Three Quarters', desc: 'THREE of the 4 equal parts. If you eat ¾ of a pizza, you\'re very hungry! 😄', color: '#6BCB77', value: 0.75 },
+    fifth:       { title: '⅕ Fifth', desc: 'Cut into 5 EQUAL parts. A pentagon has 5 sides — each side is ⅕ of the perimeter! ⬠', color: '#C77DFF', value: 0.2 },
+  };
+
+  window.showFraction = function(el) {
+    document.querySelectorAll('.frac-visual').forEach(f => f.style.transform = '');
+    el.style.transform = 'scale(1.1)';
+    const type = el.dataset.fraction;
+    const data = fracData[type];
+    const info = document.getElementById('frac-info');
+    if (data && info) {
+      info.style.display = 'block';
+      info.innerHTML = `<strong style="font-family:var(--font-display);font-size:1.6rem;color:${data.color};">${data.title}</strong><br><p style="font-size:0.92rem;color:var(--text-body);margin-top:8px;">${data.desc}</p>`;
+      info.style.animation='none'; void info.offsetWidth; info.style.animation='fadeSlideIn 0.3s ease';
+      info.style.borderColor = data.color;
+      info.style.background = data.color + '18';
+    }
+    playSound('select');
+    Progress.addStars(0);
+  };
+
+  // Fraction comparison game
+  const fracPairs = [
+    { a: 'half', b: 'quarter', answer: 'a' },
+    { a: 'third', b: 'half', answer: 'b' },
+    { a: 'quarter', b: 'quarter', answer: 'equal' },
+    { a: 'whole', b: 'half', answer: 'a' },
+    { a: 'threequarter', b: 'half', answer: 'a' },
+    { a: 'fifth', b: 'quarter', answer: 'b' },
+  ];
+  let fracCurrent = null;
+
+  function loadFracCompare() {
+    fracCurrent = fracPairs[Math.floor(Math.random() * fracPairs.length)];
+    const da = fracData[fracCurrent.a], db = fracData[fracCurrent.b];
+    const aEl = document.getElementById('frac-comp-a');
+    const bEl = document.getElementById('frac-comp-b');
+    if (aEl) aEl.innerHTML = `<div style="font-family:var(--font-display);font-size:1.8rem;color:${da.color};">${da.title}</div>`;
+    if (bEl) bEl.innerHTML = `<div style="font-family:var(--font-display);font-size:1.8rem;color:${db.color};">${db.title}</div>`;
+    document.getElementById('frac-compare-feedback').className = 'feedback';
+  }
+
+  ['a','equal','b'].forEach(ans => {
+    document.getElementById(`frac-pick-${ans}`)?.addEventListener('click', () => {
+      if (!fracCurrent) return;
+      const fb = document.getElementById('frac-compare-feedback');
+      if (ans === fracCurrent.answer) {
+        fb.className = 'feedback show success';
+        fb.innerHTML = `<span class="feedback-icon">🌟</span> Correct! Great fraction thinking!`;
+        playSound('correct'); Progress.addStars(1);
+      } else {
+        fb.className = 'feedback show error';
+        fb.innerHTML = `<span class="feedback-icon">😊</span> Not quite! Remember: bigger number on bottom = smaller fraction!`;
+        gentleEncourage();
+      }
+    });
+  });
+
+  document.getElementById('frac-next')?.addEventListener('click', () => { loadFracCompare(); playSound('click'); });
+  loadFracCompare();
+
+  // ── DIVISION ──
+  const divEmojis = ['🍕','🍭','🍪','🎈','⭐','🍓','🍊','🎁'];
+  let divA = 0, divB = 0, divEmoji = '';
+
+  function loadDivision() {
+    const pairs = [[6,2],[8,2],[9,3],[10,2],[12,3],[12,4],[15,3],[16,4],[20,4],[20,5]];
+    const pair = pairs[Math.floor(Math.random() * pairs.length)];
+    divA = pair[0]; divB = pair[1];
+    divEmoji = divEmojis[Math.floor(Math.random() * divEmojis.length)];
+
+    const prob = document.getElementById('div-problem');
+    const objs = document.getElementById('div-objects');
+    const grps = document.getElementById('div-groups');
+    const eq = document.getElementById('div-equation');
+
+    if (prob) prob.textContent = `Share ${divA} ${divEmoji} equally into ${divB} groups. How many in each group?`;
+    if (eq) eq.textContent = `${divA} ÷ ${divB} = ?`;
+
+    if (objs) {
+      objs.innerHTML = '';
+      for (let i = 0; i < divA; i++) {
+        const s = document.createElement('span');
+        s.textContent = divEmoji; s.style.fontSize = '1.8rem';
+        objs.appendChild(s);
+      }
+    }
+
+    if (grps) {
+      grps.innerHTML = '';
+      for (let i = 0; i < divB; i++) {
+        const g = document.createElement('div');
+        g.className = 'division-group';
+        const lbl = document.createElement('span');
+        lbl.textContent = `Group ${i+1}`;
+        lbl.style.cssText = 'font-family:var(--font-fun);font-size:0.75rem;color:var(--text-light);width:100%;text-align:center;';
+        g.appendChild(lbl);
+        grps.appendChild(g);
+      }
+    }
+
+    const inp = document.getElementById('div-input');
+    if (inp) { inp.value = ''; inp.className = 'math-input'; inp.style.width='80px'; inp.style.height='80px'; inp.style.fontSize='2rem'; }
+    document.getElementById('div-feedback').className = 'feedback';
+  }
+
+  document.getElementById('div-check')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('div-input')?.value);
+    const fb = document.getElementById('div-feedback');
+    const inp = document.getElementById('div-input');
+    if (isNaN(val)) { showToast('Enter your answer!', 'info'); return; }
+    if (val === divA / divB) {
+      inp.className = 'math-input correct';
+      fb.className = 'feedback show success';
+      fb.innerHTML = `<span class="feedback-icon">🌟</span> ${divA} ÷ ${divB} = ${divA/divB}! Perfect sharing!`;
+      playSound('correct'); Progress.addStars(2);
+      // Fill the groups visually
+      const grpEls = document.querySelectorAll('#div-groups .division-group');
+      const eachCount = divA / divB;
+      grpEls.forEach(g => {
+        for (let i = 0; i < eachCount; i++) {
+          const s = document.createElement('span'); s.textContent = divEmoji; g.appendChild(s);
+        }
+      });
+    } else {
+      inp.className = 'math-input wrong';
+      fb.className = 'feedback show error';
+      fb.innerHTML = `<span class="feedback-icon">😊</span> Share ${divA} items into ${divB} groups equally — what does each group get?`;
+      gentleEncourage();
+    }
+  });
+
+  document.getElementById('div-new')?.addEventListener('click', () => { loadDivision(); playSound('click'); });
+  document.getElementById('div-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('div-check')?.click(); });
+  loadDivision();
+
+  // ── MAGIC SQUARE ──
+  const magicSquares = [
+    { grid: [2,'?',6, 9,5,1, 4,3,'?'], target: 15, answers: [4, 8] },
+    { grid: [8,'?',6, 3,5,7, 4,9,'?'], target: 15, answers: [2, 2] },
+    { grid: ['?',2,3, 1,2,'?', 2,2,2], target: 6, answers: [1, 3] },
+  ];
+  let currentPuzzle = null;
+  let blankCells = [];
+
+  function loadMagicSquare() {
+    currentPuzzle = magicSquares[Math.floor(Math.random() * magicSquares.length)];
+    blankCells = [];
+    const puzzleGrid = document.getElementById('puzzle-grid');
+    const targetEl = document.getElementById('magic-target');
+    if (!puzzleGrid) return;
+
+    if (targetEl) targetEl.textContent = `🧩 Every row, column, and diagonal adds up to ${currentPuzzle.target}`;
+    puzzleGrid.innerHTML = '';
+
+    let blankIdx = 0;
+    currentPuzzle.grid.forEach((val, idx) => {
+      const cell = document.createElement('div');
+      if (val === '?') {
+        cell.className = 'puzzle-cell empty';
+        cell.contentEditable = 'true';
+        cell.setAttribute('aria-label', `Empty cell ${blankIdx+1}, enter a number`);
+        const bi = blankIdx;
+        blankCells.push({ el: cell, answer: currentPuzzle.answers[bi] });
+        blankIdx++;
+        cell.addEventListener('focus', () => { cell.textContent = ''; });
+        cell.addEventListener('input', () => {
+          const v = parseInt(cell.textContent);
+          if (!isNaN(v) && v > 0) playSound('count');
+        });
+      } else {
+        cell.className = 'puzzle-cell given';
+        cell.textContent = val;
+      }
+      puzzleGrid.appendChild(cell);
+    });
+
+    document.getElementById('puzzle-feedback').className = 'feedback';
+  }
+
+  document.getElementById('puzzle-check')?.addEventListener('click', () => {
+    const fb = document.getElementById('puzzle-feedback');
+    let allCorrect = true;
+    blankCells.forEach(({ el, answer }) => {
+      const val = parseInt(el.textContent);
+      if (val === answer) {
+        el.style.background = 'var(--green-light)';
+        el.style.borderColor = 'var(--green)';
+        el.style.color = 'var(--green-dark)';
+      } else {
+        el.style.background = 'var(--coral-light)';
+        el.style.borderColor = 'var(--coral)';
+        allCorrect = false;
+      }
+    });
+
+    if (allCorrect) {
+      fb.className = 'feedback show success';
+      fb.innerHTML = '<span class="feedback-icon">🧩</span> Magic Square complete! Every row, column, and diagonal adds up perfectly!';
+      celebrate('🧩 Magic Square solved! You\'re a math genius!');
+      Progress.addStars(3);
+    } else {
+      fb.className = 'feedback show error';
+      fb.innerHTML = '<span class="feedback-icon">😊</span> Some numbers are wrong — remember every row and column must add up to ' + currentPuzzle.target + '!';
+      gentleEncourage();
+    }
+  });
+
+  document.getElementById('puzzle-new')?.addEventListener('click', () => { loadMagicSquare(); playSound('click'); });
+  document.getElementById('puzzle-hint')?.addEventListener('click', () => {
+    if (blankCells.length > 0) {
+      const hint = blankCells[0];
+      showToast(`💡 The first blank cell = ${hint.answer}`, 'info', 4000);
+    }
+  });
+
+  loadMagicSquare();
+});
+</script>
+</body>
+</html>

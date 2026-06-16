@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Rewards | NumLand ⭐</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .rewards-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--space-2xl) var(--space-xl);
+    }
+
+    .star-dashboard {
+      background: linear-gradient(135deg, #FFF8E1, #FFF0CC);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      text-align: center;
+      border: 3px solid var(--yellow);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .star-dashboard::before {
+      content: '✦ ✦ ✦ ✦ ✦';
+      position: absolute;
+      top: 12px; left: 0; right: 0;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--yellow);
+      opacity: 0.4;
+      letter-spacing: 12px;
+    }
+
+    .star-big {
+      font-size: 5rem;
+      display: block;
+      animation: wiggle 4s ease-in-out infinite;
+    }
+
+    .star-count-display {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      color: var(--yellow-dark);
+      line-height: 1;
+      display: block;
+      text-shadow: 3px 6px 0 rgba(245,185,0,0.3);
+    }
+
+    .star-label {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-body);
+      margin-bottom: var(--space-lg);
+    }
+
+    .star-next-goal {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badges-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: var(--text-dark);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badges-section > p {
+      font-size: 0.88rem;
+      color: var(--text-light);
+      margin-bottom: var(--space-xl);
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .badge-item {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg) var(--space-md);
+      text-align: center;
+      border: 3px solid var(--bg-cream);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-bounce);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .badge-item:hover { transform: translateY(-6px) scale(1.03); box-shadow: var(--shadow-float); }
+
+    .badge-item.earned {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 2px var(--yellow-light), var(--shadow-card);
+      background: linear-gradient(160deg, white, var(--yellow-light));
+    }
+
+    .badge-item.locked { opacity: 0.45; filter: grayscale(0.6); }
+
+    .badge-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .badge-item.earned .badge-emoji { animation: wiggle 4s ease-in-out infinite; }
+
+    .badge-item-name {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text-dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .badge-item-req {
+      font-size: 0.72rem;
+      color: var(--text-light);
+    }
+
+    .badge-item.earned .badge-item-req {
+      color: var(--green-dark);
+      font-weight: 700;
+    }
+
+    .earned-ribbon {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      background: var(--yellow-dark);
+      color: white;
+      border-radius: 50px;
+      font-family: var(--font-fun);
+    }
+
+    /* Garden */
+    .garden-section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .garden-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: var(--text-dark);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .garden-scene {
+      background: linear-gradient(180deg, #87CEEB 0%, #B0E2F5 50%, #8FBC8F 50%, #6B9E6B 100%);
+      border-radius: var(--radius-xl);
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      border: 3px solid var(--green);
+      cursor: pointer;
+    }
+
+    .garden-sun-el {
+      position: absolute;
+      top: 16px; right: 24px;
+      font-size: 3rem;
+      animation: spin-slow 20s linear infinite;
+    }
+
+    .garden-cloud-el {
+      position: absolute;
+      font-size: 2.5rem;
+      animation: float 10s ease-in-out infinite;
+    }
+
+    .garden-flower-el {
+      position: absolute;
+      bottom: 16px;
+      font-size: 2.8rem;
+      animation: float 3s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform var(--transition-bounce);
+      user-select: none;
+    }
+
+    .garden-flower-el:hover { transform: scale(1.4) rotate(-10deg); }
+
+    .garden-add-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      font-size: 0.82rem;
+      padding: 6px 14px;
+    }
+
+    .garden-hint {
+      text-align: center;
+      font-family: var(--font-fun);
+      font-size: 0.82rem;
+      color: var(--text-light);
+      margin-top: 8px;
+    }
+
+    /* Progress chart */
+    .progress-section {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-card);
+      border: 2px solid var(--bg-cream);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .progress-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--text-dark);
+      margin-bottom: var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .level-progress-item {
+      margin-bottom: var(--space-md);
+    }
+
+    .level-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .level-progress-name {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .level-progress-pct {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* Reset button */
+    .reset-section {
+      background: var(--bg-cream);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      text-align: center;
+      border: 2px dashed var(--coral-light);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🦉</div><span class="nav-logo-text">Num<span>Land</span></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+    <li><a href="rewards.html" class="nav-link active">⭐ Rewards</a></li>
+  </ul>
+  <a href="rewards.html" class="btn btn-primary btn-sm nav-btn">⭐ <span data-star-count>0</span> Stars</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="level1.html" class="nav-link">🌟 Level 1</a>
+  <a href="level2.html" class="nav-link">🌱 Level 2</a>
+  <a href="level3.html" class="nav-link">🏗️ Level 3</a>
+  <a href="level4.html" class="nav-link">🗺️ Level 4</a>
+  <a href="games.html" class="nav-link">🎮 Games</a>
+  <a href="rewards.html" class="nav-link active">⭐ Rewards</a>
+</nav>
+
+<header class="page-header rewards-bg">
+  <div class="breadcrumb">
+    <a href="index.html">🏠 Home</a> <span>›</span> My Rewards
+  </div>
+  <h1 class="page-header-title">⭐ My Rewards!</h1>
+  <p class="page-header-sub">Every star you earn, every badge you collect, every flower in your garden — this is YOUR learning journey! Keep exploring!</p>
+</header>
+
+<main class="rewards-page">
+
+  <!-- Star Dashboard -->
+  <div class="star-dashboard reveal">
+    <span class="star-big">⭐</span>
+    <span class="star-count-display" id="star-count-main" aria-label="Stars earned">0</span>
+    <div class="star-label">Stars Earned!</div>
+    <div class="star-next-goal" id="next-goal">
+      <span>🎯 Next goal: </span>
+      <span id="next-goal-text">Earn 1 star to get your first badge!</span>
+    </div>
+  </div>
+
+  <!-- Garden -->
+  <div class="garden-section reveal">
+    <h2>🌻 My Learning Garden</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-md);">Every 5 stars you earn plants a new flower in your garden! Click to grow it!</p>
+    <div class="garden-scene" id="garden-scene" onclick="growFlower()">
+      <span class="garden-sun-el">☀️</span>
+      <span class="garden-cloud-el" style="top:20px;left:30px;">☁️</span>
+      <span class="garden-cloud-el" style="top:10px;left:60%;animation-delay:2s;font-size:1.8rem;">☁️</span>
+      <div id="garden-flowers"></div>
+      <button class="btn btn-green btn-sm garden-add-btn" onclick="event.stopPropagation();plantFlower()">🌱 Plant a Flower</button>
+    </div>
+    <div class="garden-hint" id="garden-hint">Keep earning stars to fill your garden with flowers! 🌺</div>
+  </div>
+
+  <!-- Badges -->
+  <div class="badges-section reveal">
+    <h2>🏆 My Badges</h2>
+    <p>Earn badges by reaching milestones! Keep learning to unlock them all.</p>
+
+    <div class="badges-grid" id="badges-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section reveal">
+    <h2>📊 My Learning Progress</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-lg);">See how far you've come across all levels!</p>
+
+    <div class="level-progress-item">
+      <div class="level-progress-header">
+        <div class="level-progress-name"><span>🌟</span> Level 1 — Number Discovery</div>
+        <div class="level-progress-pct" id="prog-1">Getting started!</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill-1" style="width:0%;background:linear-gradient(90deg,var(--yellow),var(--orange));"></div>
+      </div>
+    </div>
+
+    <div class="level-progress-item">
+      <div class="level-progress-header">
+        <div class="level-progress-name"><span>🌱</span> Level 2 — Early Explorers</div>
+        <div class="level-progress-pct" id="prog-2">Keep exploring!</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill-2" style="width:0%;background:linear-gradient(90deg,var(--green),var(--mint-dark));"></div>
+      </div>
+    </div>
+
+    <div class="level-progress-item">
+      <div class="level-progress-header">
+        <div class="level-progress-name"><span>🏗️</span> Level 3 — Math Builders</div>
+        <div class="level-progress-pct" id="prog-3">Ready to build!</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill-3" style="width:0%;background:linear-gradient(90deg,var(--blue),var(--blue-dark));"></div>
+      </div>
+    </div>
+
+    <div class="level-progress-item">
+      <div class="level-progress-header">
+        <div class="level-progress-name"><span>🗺️</span> Level 4 — Adventurers</div>
+        <div class="level-progress-pct" id="prog-4">Adventure awaits!</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill-4" style="width:0%;background:linear-gradient(90deg,var(--purple),var(--purple-dark));"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick access -->
+  <div style="text-align:center;margin-bottom:var(--space-2xl);">
+    <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">Ready to earn more stars?</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="level1.html" class="btn btn-primary">🌟 Level 1</a>
+      <a href="level2.html" class="btn btn-green">🌱 Level 2</a>
+      <a href="level3.html" class="btn btn-blue">🏗️ Level 3</a>
+      <a href="level4.html" class="btn btn-purple">🗺️ Level 4</a>
+      <a href="games.html" class="btn btn-secondary">🎮 Play Games</a>
+    </div>
+  </div>
+
+  <!-- Reset progress -->
+  <div class="reset-section reveal">
+    <h3 style="font-family:var(--font-fun);font-weight:700;margin-bottom:8px;">🔄 Start Fresh</h3>
+    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:var(--space-md);">Want to start your learning journey over? This will reset all stars and badges.</p>
+    <button class="btn btn-secondary btn-sm" onclick="confirmReset()">Reset All Progress</button>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const data = Progress.get();
+  const stars = data.stars || 0;
+
+  // Update star displays
+  document.getElementById('star-count-main').textContent = stars;
+  document.querySelectorAll('[data-star-count]').forEach(el => el.textContent = stars);
+
+  // Next goal
+  const goals = [
+    { threshold: 1, msg: 'Earn 1 star to get your First Star badge!' },
+    { threshold: 5, msg: 'Earn 5 stars to plant your first garden flower!' },
+    { threshold: 10, msg: 'Earn 10 stars to become a Star Collector!' },
+    { threshold: 25, msg: 'Earn 25 stars to become an Explorer!' },
+    { threshold: 50, msg: 'Earn 50 stars to become a Star Master!' },
+    { threshold: 100, msg: 'Earn 100 stars to become a Math Champion!' },
+  ];
+
+  const nextGoal = goals.find(g => stars < g.threshold);
+  const nextGoalEl = document.getElementById('next-goal-text');
+  if (nextGoalEl) {
+    if (nextGoal) {
+      nextGoalEl.textContent = `${nextGoal.msg} (${stars}/${nextGoal.threshold})`;
+    } else {
+      nextGoalEl.textContent = '🏆 You\'ve reached all goals! You\'re a Math Champion!';
+    }
+  }
+
+  // Progress bars (rough estimate based on stars)
+  const levelGoals = [10, 20, 30, 40];
+  levelGoals.forEach((goal, i) => {
+    const fill = document.getElementById(`prog-fill-${i+1}`);
+    const label = document.getElementById(`prog-${i+1}`);
+    const pct = Math.min(100, Math.round((stars / goal) * 100));
+    setTimeout(() => {
+      if (fill) fill.style.width = pct + '%';
+      if (label) label.textContent = pct === 0 ? 'Not started' : pct >= 100 ? 'Complete! 🏆' : `${pct}% there!`;
+    }, 500 + i * 200);
+  });
+
+  // Badges
+  const allBadges = [
+    { id: 'first_star', icon: '⭐', name: 'First Star!', req: 'Earn 1 star', threshold: 1, type: 'stars' },
+    { id: 'star_5', icon: '🌟', name: '5 Stars!', req: 'Earn 5 stars', threshold: 5, type: 'stars' },
+    { id: 'star_collector', icon: '💫', name: 'Star Collector', req: 'Earn 10 stars', threshold: 10, type: 'stars' },
+    { id: 'star_25', icon: '✨', name: 'Star Burst', req: 'Earn 25 stars', threshold: 25, type: 'stars' },
+    { id: 'star_master', icon: '🌠', name: 'Star Master', req: 'Earn 50 stars', threshold: 50, type: 'stars' },
+    { id: 'champion', icon: '🏆', name: 'Math Champion', req: 'Earn 100 stars', threshold: 100, type: 'stars' },
+    { id: 'explorer', icon: '🔭', name: 'Explorer', req: 'Complete 5 activities', threshold: 5, type: 'activities' },
+    { id: 'adventurer', icon: '🧭', name: 'Adventurer', req: 'Complete 20 activities', threshold: 20, type: 'activities' },
+    { id: 'counter', icon: '🧮', name: 'Counter', req: 'Visit Level 1', threshold: 0, type: 'visit' },
+    { id: 'puzzle_master', icon: '🧩', name: 'Puzzle Master', req: 'Try Level 4', threshold: 0, type: 'visit' },
+    { id: 'garden_starter', icon: '🌱', name: 'Garden Starter', req: 'Plant your first flower', threshold: 1, type: 'garden' },
+    { id: 'rainbow', icon: '🌈', name: 'Rainbow Math', req: 'Earn stars in all levels', threshold: 0, type: 'special' },
+  ];
+
+  const badgesGrid = document.getElementById('badges-grid');
+  const earnedBadges = data.badges || [];
+
+  // Auto-award some badges based on stars
+  const autoEarned = [];
+  allBadges.forEach(badge => {
+    if (badge.type === 'stars' && stars >= badge.threshold) autoEarned.push(badge.id);
+    if (badge.type === 'activities' && (data.activitiesCompleted || 0) >= badge.threshold) autoEarned.push(badge.id);
+  });
+  const mergedBadges = [...new Set([...earnedBadges, ...autoEarned])];
+
+  allBadges.forEach((badge, i) => {
+    const isEarned = mergedBadges.includes(badge.id);
+    const item = document.createElement('div');
+    item.className = 'badge-item' + (isEarned ? ' earned' : ' locked');
+    item.style.animationDelay = `${i * 0.1}s`;
+    item.innerHTML = `
+      ${isEarned ? '<span class="earned-ribbon">✓ Earned!</span>' : ''}
+      <span class="badge-emoji">${badge.icon}</span>
+      <span class="badge-item-name">${badge.name}</span>
+      <span class="badge-item-req">${isEarned ? '✓ Completed!' : badge.req}</span>
+    `;
+    item.title = badge.req;
+    if (isEarned) {
+      item.addEventListener('click', () => { playSound('correct'); launchConfetti(30); });
+    }
+    badgesGrid.appendChild(item);
+  });
+
+  // Garden
+  const gardenFlowers = ['🌺','🌸','🌻','🌼','🌹','🌷','💐','🌾'];
+  let flowerCount = Math.floor(stars / 5);
+  const maxFlowers = 8;
+
+  function renderGarden() {
+    const garden = document.getElementById('garden-flowers');
+    if (!garden) return;
+    garden.innerHTML = '';
+    const positions = [10,20,30,40,50,60,70,80];
+    for (let i = 0; i < Math.min(flowerCount, maxFlowers); i++) {
+      const flower = document.createElement('span');
+      flower.className = 'garden-flower-el';
+      flower.textContent = gardenFlowers[i % gardenFlowers.length];
+      flower.style.left = positions[i] + '%';
+      flower.style.animationDelay = `${i * 0.4}s`;
+      flower.title = 'Your flower! 🌸';
+      garden.appendChild(flower);
+    }
+    const hint = document.getElementById('garden-hint');
+    if (hint) {
+      if (flowerCount === 0) hint.textContent = 'Earn 5 stars to plant your first flower! 🌱';
+      else if (flowerCount >= maxFlowers) hint.textContent = '🌸 Your garden is full! What a beautiful garden!';
+      else hint.textContent = `🌺 ${flowerCount} flower${flowerCount !== 1 ? 's' : ''} growing! Earn more stars for more flowers!`;
+    }
+  }
+
+  window.growFlower = function() {
+    const flowers = document.querySelectorAll('.garden-flower-el');
+    flowers.forEach(f => {
+      f.style.transform = 'scale(1.3)';
+      setTimeout(() => f.style.transform = '', 400);
+    });
+    playSound('select');
+  };
+
+  window.plantFlower = function() {
+    if (stars < 5) {
+      showToast('Earn 5 stars first! Keep learning! 🌱', 'info');
+      return;
+    }
+    if (flowerCount >= maxFlowers) {
+      showToast('Your garden is already full! 🌸', 'success');
+      return;
+    }
+    flowerCount = Math.min(flowerCount + 1, maxFlowers);
+    renderGarden();
+    playSound('correct');
+    showToast('🌺 A new flower bloomed in your garden!', 'success');
+  };
+
+  renderGarden();
+});
+
+function confirmReset() {
+  if (confirm('Are you sure you want to reset all your stars and badges? This cannot be undone.')) {
+    localStorage.removeItem('numland_progress');
+    window.location.reload();
+  }
+}
+</script>
+</body>
+</html>

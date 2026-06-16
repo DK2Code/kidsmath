@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 2 — Early Math Explorers | NumLand 🌱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .activity-tab.active { background: var(--green); border-color: var(--green-dark); color: white; }
+
+    /* Number line 1-50 */
+    .number-line-50 {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      padding: var(--space-lg);
+      background: var(--bg-cream);
+      border-radius: var(--radius-lg);
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .nl-num {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      background: white;
+      border: 2px solid var(--green-light);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-bounce);
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nl-num:hover { transform: scale(1.15); background: var(--green-light); border-color: var(--green); }
+    .nl-num.active { background: var(--green); color: white; border-color: var(--green-dark); transform: scale(1.15); }
+    .nl-num.multiples { background: linear-gradient(135deg, var(--yellow-light), var(--yellow)); border-color: var(--yellow-dark); }
+
+    /* Comparison game */
+    .compare-boxes {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: var(--space-lg);
+      align-items: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .compare-box {
+      background: var(--bg-cream);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      text-align: center;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .compare-emojis {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      font-size: 1.8rem;
+    }
+
+    .compare-symbol {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--text-light);
+      text-align: center;
+    }
+
+    /* Pattern choices */
+    .pattern-choices {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: var(--space-md);
+    }
+
+    .welcome-level2 {
+      background: linear-gradient(135deg, var(--green-light), #D0F5D8);
+      border: 2px solid var(--green);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🦉</div>
+    <span class="nav-logo-text">Num<span>Land</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link active">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+    <li><a href="rewards.html" class="nav-link">⭐ Rewards</a></li>
+  </ul>
+  <a href="rewards.html" class="btn btn-green btn-sm nav-btn">⭐ <span data-star-count>0</span> Stars</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="level1.html" class="nav-link">🌟 Level 1</a>
+  <a href="level2.html" class="nav-link active">🌱 Level 2</a>
+  <a href="level3.html" class="nav-link">🏗️ Level 3</a>
+  <a href="level4.html" class="nav-link">🗺️ Level 4</a>
+  <a href="games.html" class="nav-link">🎮 Games</a>
+  <a href="rewards.html" class="nav-link">⭐ Rewards</a>
+</nav>
+
+<header class="page-header level2-bg" id="addition">
+  <div class="breadcrumb">
+    <a href="index.html">🏠 Home</a> <span>›</span> Level 2
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:8px;background:var(--green);color:white;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;padding:6px 16px;border-radius:50px;margin-bottom:12px;">🌟 Ages 5–6</div>
+  <h1 class="page-header-title">🌱 Early Math Explorers</h1>
+  <p class="page-header-sub">Count to 50, compare numbers, add and subtract with pictures, discover patterns, and become a math explorer!</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🔢 Numbers 1–50</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">➕ Addition</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">➖ Subtraction</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🎨 Patterns</div>
+  </div>
+</header>
+
+<main class="activity-container">
+
+  <!-- Welcome Banner -->
+  <div class="level-welcome welcome-level2 reveal" style="background:linear-gradient(135deg,var(--green-light),#D0F5D8);border:2px solid var(--green);">
+    <div class="level-welcome-icon">🦉</div>
+    <div class="level-welcome-text">
+      <h2>Welcome, Explorer! 🌱</h2>
+      <p>Ready to explore bigger numbers and discover addition? You'll count to 50, add fruits, spot patterns, and compare groups! Every activity earns you stars! ⭐</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="activity-tabs reveal" role="tablist">
+    <button class="activity-tab active" data-tab="act2-numline">🔢 Number Line</button>
+    <button class="activity-tab" data-tab="act2-compare">⚖️ Compare</button>
+    <button class="activity-tab" data-tab="act2-addition">➕ Addition</button>
+    <button class="activity-tab" data-tab="act2-subtraction">➖ Subtraction</button>
+    <button class="activity-tab" data-tab="act2-patterns">🎨 Patterns</button>
+  </div>
+
+  <!-- ── NUMBER LINE 1–50 ── -->
+  <div class="activity-panel active" id="act2-numline">
+    <div class="activity-card green-card">
+      <h2 class="activity-title">🔢 The Big Number Line!</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Can you find numbers 1 to 50?</strong> Click any number to jump to it! Numbers highlighted in yellow are special multiples of 5!</span>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-sm btn-secondary" onclick="highlightMultiples(2)">Skip by 2s</button>
+        <button class="btn btn-sm btn-secondary" onclick="highlightMultiples(5)">Skip by 5s</button>
+        <button class="btn btn-sm btn-secondary" onclick="highlightMultiples(10)">Skip by 10s</button>
+        <button class="btn btn-sm btn-secondary" onclick="clearHighlights()">Clear</button>
+      </div>
+
+      <div class="number-line-50" id="nl50-grid"></div>
+
+      <div id="nl50-msg" style="text-align:center;margin-top:var(--space-md);font-family:var(--font-display);font-size:1.4rem;color:var(--green-dark);min-height:40px;" aria-live="polite"></div>
+    </div>
+
+    <!-- Counting backward -->
+    <div class="activity-card green-card">
+      <h2 class="activity-title">🔄 Count Backward!</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Counting backward is important too!</strong> Click START and then click each number counting DOWN from 10 to 1!</span>
+      </div>
+
+      <div id="countdown-area" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:var(--space-lg);background:var(--bg-cream);border-radius:var(--radius-lg);margin-bottom:var(--space-md);">
+        <!-- Populated by JS -->
+      </div>
+
+      <div id="countdown-msg" style="text-align:center;font-family:var(--font-fun);font-weight:700;font-size:1.1rem;color:var(--green-dark);min-height:36px;" aria-live="polite"></div>
+      <div style="text-align:center;margin-top:12px;">
+        <button class="btn btn-green btn-sm" onclick="startCountdown()">🚀 Start!</button>
+        <button class="btn btn-secondary btn-sm" onclick="resetCountdown()">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMPARE ── -->
+  <div class="activity-panel" id="act2-compare">
+    <div class="activity-card green-card">
+      <h2 class="activity-title">⚖️ More, Less, or Equal?</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Look at both groups!</strong> Which has more? Which has less? Or are they equal? Press the right button!</span>
+      </div>
+
+      <div class="compare-boxes" id="compare-container">
+        <div class="compare-box" id="compare-left"></div>
+        <div class="compare-symbol">?</div>
+        <div class="compare-box" id="compare-right"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-green compare-btn" data-answer="more">⬅️ Left has MORE</button>
+        <button class="btn btn-secondary compare-btn" data-answer="equal">🟰 They're EQUAL</button>
+        <button class="btn btn-blue compare-btn" data-answer="less">➡️ Right has MORE</button>
+      </div>
+
+      <div class="feedback" id="compare-feedback"></div>
+
+      <div style="text-align:center;margin-top:12px;">
+        <button class="btn btn-secondary new-compare-btn">🔀 New Comparison</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADDITION ── -->
+  <div class="activity-panel" id="act2-addition">
+    <div class="activity-card green-card">
+      <h2 class="activity-title">➕ Adding with Fruits!</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Count both groups of fruit together!</strong> That's addition! Write the total in the box.</span>
+      </div>
+
+      <div class="math-visual" id="add-visual">
+        <div class="math-group math-group-1" id="add-group1" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:180px;"></div>
+        <div class="math-symbol">+</div>
+        <div class="math-group math-group-2" id="add-group2" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:180px;"></div>
+        <div class="math-symbol">=</div>
+        <div>
+          <input type="number" class="math-input" id="add-input" min="0" max="20" placeholder="?" aria-label="Enter your answer" />
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:var(--space-md);">
+        <span style="font-family:var(--font-display);font-size:1.5rem;color:var(--text-dark);" id="add-equation">? + ? = ?</span>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-green check-btn" id="add-check">✓ Check Answer</button>
+        <button class="btn btn-secondary new-problem-btn" id="add-new">🔀 New Problem</button>
+      </div>
+
+      <div class="feedback" id="add-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ── SUBTRACTION ── -->
+  <div class="activity-panel" id="act2-subtraction">
+    <div class="activity-card green-card">
+      <h2 class="activity-title">➖ Subtraction Fun!</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Some items are being taken away!</strong> The crossed-out ones are gone. How many are left?</span>
+      </div>
+
+      <div class="math-visual" id="sub-visual">
+        <div id="sub-group" class="math-group" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:280px;"></div>
+        <div class="math-symbol">=</div>
+        <div>
+          <input type="number" class="math-input" id="sub-input" min="0" max="20" placeholder="?" aria-label="Enter your answer" />
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:var(--space-md);">
+        <span style="font-family:var(--font-display);font-size:1.5rem;color:var(--text-dark);" id="sub-equation">? - ? = ?</span>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-green check-btn" id="sub-check">✓ Check Answer</button>
+        <button class="btn btn-secondary new-problem-btn" id="sub-new">🔀 New Problem</button>
+      </div>
+
+      <div class="feedback" id="sub-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ── PATTERNS ── -->
+  <div class="activity-panel" id="act2-patterns">
+    <div class="activity-card green-card">
+      <h2 class="activity-title">🎨 Pattern Explorer!</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Can you see the pattern?</strong> Something is missing! Click the correct answer below to complete the pattern!</span>
+      </div>
+
+      <div class="pattern-row" id="pattern-display" role="group" aria-label="Pattern sequence"></div>
+
+      <div class="pattern-choices" id="pattern-choices"></div>
+
+      <div class="feedback" id="pattern-feedback"></div>
+
+      <div style="text-align:center;margin-top:var(--space-md);">
+        <button class="btn btn-green next-pattern-btn" id="next-pattern">🔀 New Pattern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--green-light);margin-top:var(--space-lg);">
+    <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">🎉 Excellent exploring! Keep going!</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="level1.html" class="btn btn-secondary">← Level 1</a>
+      <a href="rewards.html" class="btn btn-secondary">⭐ My Stars</a>
+      <a href="level3.html" class="btn btn-blue">🏗️ Try Level 3 →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── NUMBER LINE 1–50 ──
+  const nl50 = document.getElementById('nl50-grid');
+  if (nl50) {
+    for (let n = 1; n <= 50; n++) {
+      const el = document.createElement('div');
+      el.className = 'nl-num' + (n % 5 === 0 ? ' multiples' : '');
+      el.textContent = n;
+      el.dataset.num = n;
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-label', `Number ${n}`);
+      el.addEventListener('click', function() {
+        nl50.querySelectorAll('.nl-num').forEach(n => n.classList.remove('active'));
+        this.classList.add('active');
+        const msgs = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+          'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty',
+          'twenty-one','twenty-two','twenty-three','twenty-four','twenty-five','twenty-six','twenty-seven','twenty-eight','twenty-nine','thirty',
+          'thirty-one','thirty-two','thirty-three','thirty-four','thirty-five','thirty-six','thirty-seven','thirty-eight','thirty-nine','forty',
+          'forty-one','forty-two','forty-three','forty-four','forty-five','forty-six','forty-seven','forty-eight','forty-nine','fifty'
+        ];
+        const msg = document.getElementById('nl50-msg');
+        if (msg) msg.textContent = `${n} — ${msgs[n]} ${n === 10 ? '🎉' : n === 20 ? '🌟' : n === 30 ? '⭐' : n === 40 ? '✨' : n === 50 ? '🏆' : ''}`;
+        playSound('select');
+      });
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') el.click(); });
+      nl50.appendChild(el);
+    }
+  }
+
+  // ── COUNTDOWN ──
+  let countdownNext = 10;
+  let countdownActive = false;
+
+  function startCountdown() {
+    resetCountdown();
+    countdownActive = true;
+    const area = document.getElementById('countdown-area');
+    const msg = document.getElementById('countdown-msg');
+    if (msg) msg.textContent = 'Click 10, then 9, then 8... all the way to 1! 🚀';
+
+    area.innerHTML = '';
+    for (let n = 10; n >= 1; n--) {
+      const el = document.createElement('div');
+      el.className = 'nl-num';
+      el.textContent = n;
+      el.dataset.value = n;
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.addEventListener('click', function() {
+        if (!countdownActive) return;
+        const val = parseInt(this.dataset.value);
+        if (val === countdownNext) {
+          this.classList.add('active');
+          this.style.pointerEvents = 'none';
+          countdownNext--;
+          playSound('count');
+          if (countdownNext === 0) {
+            if (msg) msg.textContent = '🎉 BLAST OFF! You counted all the way down!';
+            celebrate('🚀 Amazing countdown! Blast off!');
+            Progress.addStars(2);
+            countdownActive = false;
+          } else {
+            if (msg) msg.textContent = `Great! Now click ${countdownNext}...`;
+          }
+        } else {
+          gentleEncourage(`Start from 10 and go down! Next is ${countdownNext}`);
+        }
+      });
+      area.appendChild(el);
+    }
+  }
+
+  function resetCountdown() {
+    countdownNext = 10;
+    countdownActive = false;
+    const area = document.getElementById('countdown-area');
+    if (area) area.innerHTML = '<span style="color:var(--text-light);font-family:var(--font-fun);">Click START to begin! 🚀</span>';
+    const msg = document.getElementById('countdown-msg');
+    if (msg) msg.textContent = '';
+  }
+
+  window.startCountdown = startCountdown;
+  window.resetCountdown = resetCountdown;
+
+  resetCountdown();
+
+  // ── COMPARE ──
+  initComparisonGame(document.getElementById('act2-compare'));
+
+  // ── ADDITION ──
+  const addEmojis = ['🍎','🍊','🍋','🍇','🍓','🥝','🍑','🫐','🍍','🥭'];
+  let addA = 0, addB = 0, addEmoji = '';
+
+  function generateAddition() {
+    addA = Math.floor(Math.random() * 6) + 1;
+    addB = Math.floor(Math.random() * 6) + 1;
+    addEmoji = addEmojis[Math.floor(Math.random() * addEmojis.length)];
+
+    const g1 = document.getElementById('add-group1');
+    const g2 = document.getElementById('add-group2');
+    if (g1) { g1.innerHTML = ''; for (let i = 0; i < addA; i++) { const s = document.createElement('span'); s.className = 'math-object'; s.textContent = addEmoji; g1.appendChild(s); } }
+    if (g2) { g2.innerHTML = ''; for (let i = 0; i < addB; i++) { const s = document.createElement('span'); s.className = 'math-object'; s.textContent = addEmoji; g2.appendChild(s); } }
+    const eq = document.getElementById('add-equation');
+    if (eq) eq.textContent = `${addA} + ${addB} = ?`;
+    const inp = document.getElementById('add-input');
+    if (inp) { inp.value = ''; inp.className = 'math-input'; }
+    document.getElementById('add-feedback').className = 'feedback';
+  }
+
+  document.getElementById('add-check')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('add-input')?.value);
+    const fb = document.getElementById('add-feedback');
+    const inp = document.getElementById('add-input');
+    if (isNaN(val)) { showToast('Type your answer!', 'info'); return; }
+    if (val === addA + addB) {
+      inp.className = 'math-input correct';
+      fb.className = 'feedback show success';
+      fb.innerHTML = `<span class="feedback-icon">🌟</span> ${addA} + ${addB} = ${addA+addB}! Perfect adding!`;
+      playSound('correct');
+      Progress.addStars(1);
+      document.getElementById('add-equation').textContent = `${addA} + ${addB} = ${addA+addB}`;
+    } else {
+      inp.className = 'math-input wrong';
+      fb.className = 'feedback show error';
+      fb.innerHTML = `<span class="feedback-icon">😊</span> Count all the ${addEmoji} in both groups!`;
+      gentleEncourage();
+    }
+  });
+
+  document.getElementById('add-new')?.addEventListener('click', () => { generateAddition(); playSound('click'); });
+  document.getElementById('add-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('add-check')?.click(); });
+  generateAddition();
+
+  // ── SUBTRACTION ──
+  const subEmojis = ['🍓','🫐','🍊','🍋','🍇','🥝','🍑','🍒','🥭','🍍'];
+  let subA = 0, subB = 0, subEmoji = '';
+
+  function generateSubtraction() {
+    subA = Math.floor(Math.random() * 7) + 3;
+    subB = Math.floor(Math.random() * (subA - 1)) + 1;
+    subEmoji = subEmojis[Math.floor(Math.random() * subEmojis.length)];
+
+    const grp = document.getElementById('sub-group');
+    if (grp) {
+      grp.innerHTML = '';
+      for (let i = 0; i < subA; i++) {
+        const s = document.createElement('span');
+        s.className = 'math-object';
+        s.textContent = subEmoji;
+        if (i >= subA - subB) { s.style.opacity = '0.25'; s.style.textDecoration = 'line-through'; }
+        grp.appendChild(s);
+      }
+    }
+    const eq = document.getElementById('sub-equation');
+    if (eq) eq.textContent = `${subA} - ${subB} = ?`;
+    const inp = document.getElementById('sub-input');
+    if (inp) { inp.value = ''; inp.className = 'math-input'; }
+    document.getElementById('sub-feedback').className = 'feedback';
+  }
+
+  document.getElementById('sub-check')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('sub-input')?.value);
+    const fb = document.getElementById('sub-feedback');
+    const inp = document.getElementById('sub-input');
+    if (isNaN(val)) { showToast('Type your answer!', 'info'); return; }
+    if (val === subA - subB) {
+      inp.className = 'math-input correct';
+      fb.className = 'feedback show success';
+      fb.innerHTML = `<span class="feedback-icon">🌟</span> ${subA} - ${subB} = ${subA-subB}! Brilliant!`;
+      playSound('correct');
+      Progress.addStars(1);
+      document.getElementById('sub-equation').textContent = `${subA} - ${subB} = ${subA-subB}`;
+    } else {
+      inp.className = 'math-input wrong';
+      fb.className = 'feedback show error';
+      fb.innerHTML = `<span class="feedback-icon">😊</span> Count only the ${subEmoji} that are NOT crossed out!`;
+      gentleEncourage();
+    }
+  });
+
+  document.getElementById('sub-new')?.addEventListener('click', () => { generateSubtraction(); playSound('click'); });
+  document.getElementById('sub-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('sub-check')?.click(); });
+  generateSubtraction();
+
+  // ── PATTERNS ──
+  initPatternGame(document.getElementById('act2-patterns'));
+});
+
+// Highlight multiples on number line
+function highlightMultiples(n) {
+  document.querySelectorAll('.nl-num').forEach(el => {
+    const num = parseInt(el.dataset.num);
+    el.classList.toggle('multiples', num % n === 0);
+    el.classList.remove('active');
+  });
+  showToast(`Highlighted multiples of ${n}! 🌟`, 'success');
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.nl-num').forEach(el => {
+    el.classList.remove('multiples', 'active');
+  });
+}
+</script>
+</body>
+</html>

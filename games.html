@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Games | NumLand 🎮</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .game-area {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: var(--space-xl);
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      border: 3px solid var(--yellow-light);
+      margin-bottom: var(--space-xl);
+    }
+
+    .game-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .game-score-bar {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+      background: var(--bg-cream);
+      padding: 8px 20px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-fun);
+      font-weight: 700;
+    }
+
+    .game-score-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--yellow-dark);
+    }
+
+    /* Flash Card Game */
+    .flash-card {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto var(--space-lg);
+      perspective: 600px;
+      cursor: pointer;
+    }
+
+    .flash-card-inner {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+      position: relative;
+    }
+
+    .flash-card:hover .flash-card-inner { transform: rotateY(180deg); }
+    .flash-card.flipped .flash-card-inner { transform: rotateY(180deg); }
+
+    .flash-face {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-xl);
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .flash-front {
+      background: linear-gradient(135deg, var(--yellow), var(--orange));
+      font-family: var(--font-display);
+      font-size: 5rem;
+      color: white;
+    }
+
+    .flash-back {
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: white;
+      transform: rotateY(180deg);
+      text-align: center;
+      padding: 20px;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Quick Math Quiz */
+    .quiz-timer {
+      width: 100%;
+      height: 12px;
+      background: var(--bg-cream);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: var(--space-lg);
+    }
+
+    .quiz-timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--yellow), var(--coral));
+      border-radius: var(--radius-full);
+      transition: width 0.1s linear;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .quiz-option {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      background: white;
+      border: 3px solid var(--yellow-light);
+      cursor: pointer;
+      transition: all var(--transition-bounce);
+      box-shadow: var(--shadow-sm);
+      color: var(--text-dark);
+      text-align: center;
+    }
+
+    .quiz-option:hover { transform: scale(1.04); border-color: var(--yellow); background: var(--yellow-light); }
+    .quiz-option.correct { background: var(--green-light); border-color: var(--green); animation: popIn 0.3s ease; }
+    .quiz-option.wrong { background: var(--coral-light); border-color: var(--coral); animation: shake 0.4s ease; }
+
+    /* Number Jump (bubble pop) */
+    .bubble-container {
+      position: relative;
+      height: 300px;
+      background: linear-gradient(180deg, #87CEEB 0%, #E0F4FF 100%);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      cursor: pointer;
+      border: 3px solid var(--blue-light);
+      margin-bottom: var(--space-lg);
+    }
+
+    .bubble {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      user-select: none;
+    }
+
+    .bubble:hover { transform: scale(1.1); }
+
+    /* Counting challenge */
+    .challenge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      padding: var(--space-lg);
+      background: var(--bg-cream);
+      border-radius: var(--radius-lg);
+      min-height: 150px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .challenge-item {
+      font-size: 2.2rem;
+      cursor: pointer;
+      transition: transform var(--transition-bounce);
+      user-select: none;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+    }
+
+    .challenge-item:hover { transform: scale(1.2); }
+    .challenge-item.counted { opacity: 0.3; transform: scale(0.9); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🦉</div><span class="nav-logo-text">Num<span>Land</span></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="games.html" class="nav-link active">🎮 Games</a></li>
+    <li><a href="rewards.html" class="nav-link">⭐ Rewards</a></li>
+  </ul>
+  <a href="rewards.html" class="btn btn-primary btn-sm nav-btn">⭐ <span data-star-count>0</span> Stars</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="level1.html" class="nav-link">🌟 Level 1</a>
+  <a href="level2.html" class="nav-link">🌱 Level 2</a>
+  <a href="level3.html" class="nav-link">🏗️ Level 3</a>
+  <a href="level4.html" class="nav-link">🗺️ Level 4</a>
+  <a href="games.html" class="nav-link active">🎮 Games</a>
+  <a href="rewards.html" class="nav-link">⭐ Rewards</a>
+</nav>
+
+<header class="page-header games-bg">
+  <div class="breadcrumb">
+    <a href="index.html">🏠 Home</a> <span>›</span> Math Games
+  </div>
+  <h1 class="page-header-title">🎮 Math Games!</h1>
+  <p class="page-header-sub">Play fun games, earn stars, and practice math without even realizing it! Every game makes you stronger!</p>
+</header>
+
+<main class="activity-container" style="max-width:800px;">
+
+  <!-- Game tabs -->
+  <div class="activity-tabs reveal" role="tablist">
+    <button class="activity-tab active" data-tab="game-quiz">⚡ Quick Math</button>
+    <button class="activity-tab" data-tab="game-flash">🃏 Flash Cards</button>
+    <button class="activity-tab" data-tab="game-bubble">🫧 Number Bubbles</button>
+    <button class="activity-tab" data-tab="game-count">🔢 Count Challenge</button>
+  </div>
+
+  <!-- ── QUICK MATH QUIZ ── -->
+  <div class="activity-panel active" id="game-quiz">
+    <div class="game-area">
+      <div class="game-title-bar">
+        <h2 class="activity-title" style="margin-bottom:0;">⚡ Quick Math Quiz!</h2>
+        <div class="game-score-bar">
+          <span>Score: </span><span class="game-score-num" id="quiz-score">0</span>
+          <span>🌟</span>
+          <span>Best: </span><span class="game-score-num" id="quiz-best">0</span>
+        </div>
+      </div>
+
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">⚡</span>
+        <span>Pick the right answer as fast as you can! No pressure — just do your best!</span>
+      </div>
+
+      <div class="quiz-timer"><div class="quiz-timer-fill" id="quiz-timer" style="width:100%;"></div></div>
+
+      <div style="text-align:center;margin-bottom:var(--space-lg);">
+        <div id="quiz-question" style="font-family:var(--font-display);font-size:3rem;color:var(--text-dark);"></div>
+      </div>
+
+      <div class="quiz-options" id="quiz-options"></div>
+
+      <div id="quiz-result" style="text-align:center;font-family:var(--font-fun);font-weight:700;font-size:1.1rem;min-height:36px;color:var(--green-dark);" aria-live="polite"></div>
+
+      <div style="text-align:center;margin-top:var(--space-md);">
+        <button class="btn btn-primary" id="quiz-start">🚀 Start Game!</button>
+        <button class="btn btn-secondary" id="quiz-next" style="display:none;">→ Next Question</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLASH CARDS ── -->
+  <div class="activity-panel" id="game-flash">
+    <div class="game-area">
+      <h2 class="activity-title">🃏 Math Flash Cards!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🃏</span>
+        <span>Look at the math problem, think of the answer, then <strong>hover or click the card</strong> to reveal it!</span>
+      </div>
+
+      <div id="flash-card" class="flash-card" role="button" tabindex="0" aria-label="Flash card - click to reveal answer">
+        <div class="flash-card-inner">
+          <div class="flash-face flash-front" id="flash-front">?</div>
+          <div class="flash-face flash-back" id="flash-back">
+            <span id="flash-answer">?</span>
+            <span id="flash-fact" style="font-size:1rem;opacity:0.8;"></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:var(--space-lg);">
+        <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-light);font-size:0.9rem;">👆 Hover over the card to see the answer!</p>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-secondary" id="flash-prev">← Previous</button>
+        <button class="btn btn-primary" id="flash-new-set">🔀 Random Card</button>
+        <button class="btn btn-secondary" id="flash-next">Next →</button>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <button class="btn btn-sm btn-secondary" onclick="setFlashType('add')">➕ Addition</button>
+        <button class="btn btn-sm btn-secondary" onclick="setFlashType('sub')">➖ Subtraction</button>
+        <button class="btn btn-sm btn-secondary" onclick="setFlashType('mult')">✖️ Times Tables</button>
+        <button class="btn btn-sm btn-secondary" onclick="setFlashType('count')">🔢 Number Facts</button>
+      </div>
+
+      <div id="flash-progress" style="text-align:center;font-family:var(--font-fun);font-size:0.88rem;color:var(--text-light);"></div>
+    </div>
+  </div>
+
+  <!-- ── NUMBER BUBBLES ── -->
+  <div class="activity-panel" id="game-bubble">
+    <div class="game-area">
+      <div class="game-title-bar">
+        <h2 class="activity-title" style="margin-bottom:0;">🫧 Number Bubbles!</h2>
+        <div class="game-score-bar">
+          <span>Popped: </span><span class="game-score-num" id="bubble-score">0</span>
+        </div>
+      </div>
+
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🫧</span>
+        <span id="bubble-instruction">Pop bubbles in order from <strong>1 to 10</strong>! Find the next number!</span>
+      </div>
+
+      <div class="bubble-container" id="bubble-container"></div>
+
+      <div style="text-align:center;margin-bottom:var(--space-md);">
+        <span style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);">Next number to pop: </span>
+        <span id="bubble-next" style="font-family:var(--font-display);font-size:2rem;color:var(--blue-dark);">1</span>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-blue" id="bubble-start">🚀 Start!</button>
+        <button class="btn btn-secondary" id="bubble-reset">↺ Reset</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-family:var(--font-fun);font-weight:700;font-size:0.88rem;color:var(--text-body);">Up to:</label>
+          <select id="bubble-max" style="padding:8px 12px;border-radius:var(--radius-full);border:2px solid var(--blue-light);font-family:var(--font-fun);font-weight:700;font-size:0.88rem;background:white;">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COUNT CHALLENGE ── -->
+  <div class="activity-panel" id="game-count">
+    <div class="game-area">
+      <div class="game-title-bar">
+        <h2 class="activity-title" style="margin-bottom:0;">🔢 Count Challenge!</h2>
+        <div class="game-score-bar">
+          <span>Stars: </span><span class="game-score-num" id="count-challenge-score">0</span>
+        </div>
+      </div>
+
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🔢</span>
+        <span>Count the items and type the correct number! Click items to help you count!</span>
+      </div>
+
+      <div id="challenge-question" style="text-align:center;margin-bottom:var(--space-md);font-family:var(--font-fun);font-weight:700;font-size:1.05rem;color:var(--text-dark);"></div>
+
+      <div class="challenge-grid" id="challenge-grid"></div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-md);flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <input type="number" class="math-input" id="challenge-input" style="width:80px;height:80px;font-size:2.5rem;" placeholder="?" min="0" max="30" aria-label="Count answer" />
+        <button class="btn btn-primary" id="challenge-check">✓ Check</button>
+      </div>
+
+      <div class="feedback" id="challenge-feedback"></div>
+
+      <div style="text-align:center;margin-top:var(--space-md);">
+        <button class="btn btn-secondary" id="challenge-new">🔀 New Challenge</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--yellow-light);margin-top:var(--space-lg);">
+    <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">🎉 Keep playing to earn more stars!</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="rewards.html" class="btn btn-primary">⭐ See My Rewards</a>
+      <a href="index.html" class="btn btn-secondary">🏠 Home</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── QUICK MATH QUIZ ──
+  let quizScore = 0, quizBest = parseInt(localStorage.getItem('quiz_best') || '0');
+  let quizActive = false, quizTimerInterval = null, quizTimeLeft = 100;
+  let quizCurrent = null;
+
+  document.getElementById('quiz-best').textContent = quizBest;
+
+  function generateQuizQuestion() {
+    const types = ['add','sub','mult','count'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    let q = '', answer = 0, wrong = [];
+
+    if (type === 'add') {
+      const a = Math.floor(Math.random() * 8) + 1;
+      const b = Math.floor(Math.random() * 8) + 1;
+      answer = a + b;
+      q = `${a} + ${b} = ?`;
+      wrong = [answer-1, answer+1, answer+2].filter(n => n !== answer && n > 0);
+    } else if (type === 'sub') {
+      const a = Math.floor(Math.random() * 8) + 3;
+      const b = Math.floor(Math.random() * (a-1)) + 1;
+      answer = a - b;
+      q = `${a} - ${b} = ?`;
+      wrong = [answer-1, answer+1, answer+2].filter(n => n !== answer && n >= 0);
+    } else if (type === 'mult') {
+      const a = Math.floor(Math.random() * 6) + 1;
+      const b = Math.floor(Math.random() * 6) + 1;
+      answer = a * b;
+      q = `${a} × ${b} = ?`;
+      wrong = [answer-a, answer+a, answer+b].filter(n => n !== answer && n > 0);
+    } else {
+      const n = Math.floor(Math.random() * 9) + 2;
+      const prev = n - 1, next = n + 1;
+      answer = next;
+      q = `What comes after ${n}?`;
+      wrong = [n-1, n, n+2];
+    }
+
+    const options = [...wrong.slice(0,3), answer].sort(() => Math.random() - 0.5);
+    return { q, answer, options };
+  }
+
+  function loadQuizQuestion() {
+    quizCurrent = generateQuizQuestion();
+    document.getElementById('quiz-question').textContent = quizCurrent.q;
+    document.getElementById('quiz-result').textContent = '';
+
+    const optionsEl = document.getElementById('quiz-options');
+    optionsEl.innerHTML = '';
+    quizCurrent.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.addEventListener('click', function() {
+        if (!quizActive) return;
+        clearInterval(quizTimerInterval);
+        optionsEl.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+        if (parseInt(opt) === quizCurrent.answer) {
+          btn.classList.add('correct');
+          quizScore++;
+          document.getElementById('quiz-score').textContent = quizScore;
+          document.getElementById('quiz-result').textContent = '🌟 Correct! Great job!';
+          document.getElementById('quiz-result').style.color = 'var(--green-dark)';
+          playSound('correct');
+          if (quizScore > quizBest) {
+            quizBest = quizScore;
+            localStorage.setItem('quiz_best', quizBest);
+            document.getElementById('quiz-best').textContent = quizBest;
+          }
+          Progress.addStars(1);
+        } else {
+          btn.classList.add('wrong');
+          optionsEl.querySelectorAll('.quiz-option').forEach(b => {
+            if (parseInt(b.textContent) === quizCurrent.answer) b.classList.add('correct');
+          });
+          document.getElementById('quiz-result').textContent = `😊 The answer was ${quizCurrent.answer}! You're learning!`;
+          document.getElementById('quiz-result').style.color = 'var(--coral-dark)';
+          gentleEncourage();
+        }
+        document.getElementById('quiz-next').style.display = 'inline-flex';
+      });
+      optionsEl.appendChild(btn);
+    });
+
+    // Timer
+    quizTimeLeft = 100;
+    document.getElementById('quiz-timer').style.width = '100%';
+    document.getElementById('quiz-timer').style.background = 'linear-gradient(90deg, var(--green), var(--yellow))';
+
+    quizTimerInterval = setInterval(() => {
+      quizTimeLeft -= 0.8;
+      document.getElementById('quiz-timer').style.width = Math.max(0, quizTimeLeft) + '%';
+      if (quizTimeLeft <= 30) document.getElementById('quiz-timer').style.background = 'var(--coral)';
+      if (quizTimeLeft <= 0) {
+        clearInterval(quizTimerInterval);
+        if (quizActive) {
+          document.getElementById('quiz-result').textContent = `⏰ Time's up! The answer was ${quizCurrent.answer}`;
+          document.getElementById('quiz-result').style.color = 'var(--coral-dark)';
+          optionsEl.querySelectorAll('.quiz-option').forEach(b => {
+            b.disabled = true;
+            if (parseInt(b.textContent) === quizCurrent.answer) b.classList.add('correct');
+          });
+          document.getElementById('quiz-next').style.display = 'inline-flex';
+        }
+      }
+    }, 50);
+  }
+
+  document.getElementById('quiz-start')?.addEventListener('click', () => {
+    quizActive = true;
+    quizScore = 0;
+    document.getElementById('quiz-score').textContent = 0;
+    document.getElementById('quiz-start').style.display = 'none';
+    document.getElementById('quiz-next').style.display = 'none';
+    loadQuizQuestion();
+    playSound('click');
+  });
+
+  document.getElementById('quiz-next')?.addEventListener('click', () => {
+    document.getElementById('quiz-next').style.display = 'none';
+    loadQuizQuestion();
+    playSound('click');
+  });
+
+  // ── FLASH CARDS ──
+  let flashType = 'add';
+  let flashCards = [];
+  let flashIdx = 0;
+
+  function buildFlashCards(type) {
+    flashCards = [];
+    if (type === 'add') {
+      for (let a = 1; a <= 10; a++) for (let b = 1; b <= 10; b++) flashCards.push({ q: `${a} + ${b}`, a: a+b, fact: `${a} + ${b} = ${a+b}` });
+    } else if (type === 'sub') {
+      for (let a = 2; a <= 10; a++) for (let b = 1; b < a; b++) flashCards.push({ q: `${a} - ${b}`, a: a-b, fact: `${a} - ${b} = ${a-b}` });
+    } else if (type === 'mult') {
+      for (let a = 1; a <= 10; a++) for (let b = 1; b <= 10; b++) flashCards.push({ q: `${a} × ${b}`, a: a*b, fact: `${a} × ${b} = ${a*b}` });
+    } else {
+      const facts = ['1 is the first number', '2 is an even number', '0 + anything = anything', '10 has one 1 and one 0', '5 + 5 = 10', '2 × anything = doubles it', '100 = 10 × 10'];
+      flashCards = facts.map((f, i) => ({ q: `Fact ${i+1}`, a: '🧠', fact: f }));
+    }
+    flashCards = flashCards.sort(() => Math.random() - 0.5);
+    flashIdx = 0;
+    showFlashCard();
+  }
+
+  function showFlashCard() {
+    if (!flashCards.length) return;
+    const card = flashCards[flashIdx];
+    const front = document.getElementById('flash-front');
+    const answer = document.getElementById('flash-answer');
+    const fact = document.getElementById('flash-fact');
+    const progress = document.getElementById('flash-progress');
+    const cardEl = document.getElementById('flash-card');
+
+    if (front) front.textContent = card.q;
+    if (answer) answer.textContent = card.a;
+    if (fact) fact.textContent = card.fact;
+    if (progress) progress.textContent = `Card ${flashIdx + 1} of ${flashCards.length}`;
+    if (cardEl) cardEl.classList.remove('flipped');
+  }
+
+  window.setFlashType = function(type) {
+    flashType = type;
+    buildFlashCards(type);
+    playSound('click');
+  };
+
+  document.getElementById('flash-card')?.addEventListener('click', function() {
+    this.classList.toggle('flipped');
+    playSound('select');
+  });
+
+  document.getElementById('flash-card')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') this.click();
+  });
+
+  document.getElementById('flash-next')?.addEventListener('click', () => {
+    flashIdx = (flashIdx + 1) % flashCards.length;
+    showFlashCard();
+    playSound('click');
+  });
+
+  document.getElementById('flash-prev')?.addEventListener('click', () => {
+    flashIdx = (flashIdx - 1 + flashCards.length) % flashCards.length;
+    showFlashCard();
+    playSound('click');
+  });
+
+  document.getElementById('flash-new-set')?.addEventListener('click', () => {
+    buildFlashCards(flashType);
+    playSound('click');
+  });
+
+  buildFlashCards('add');
+
+  // ── NUMBER BUBBLES ──
+  let bubbleNext = 1, bubbleMax = 10, bubbleActive = false;
+  const colors = ['#FF6B6B','#FF9E4F','#FFD93D','#6BCB77','#4D96FF','#C77DFF','#FF8FAB','#4CC98A','#6B8EFF','#FFD93D'];
+
+  function spawnBubbles() {
+    const container = document.getElementById('bubble-container');
+    if (!container) return;
+    container.innerHTML = '';
+    const max = parseInt(document.getElementById('bubble-max')?.value || 10);
+    bubbleMax = max;
+    bubbleNext = 1;
+    document.getElementById('bubble-next').textContent = '1';
+    document.getElementById('bubble-score').textContent = '0';
+
+    const nums = [];
+    for (let i = 1; i <= max; i++) nums.push(i);
+    nums.sort(() => Math.random() - 0.5);
+
+    nums.forEach((n, i) => {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = n;
+      bubble.dataset.num = n;
+      bubble.style.background = `radial-gradient(circle at 35% 30%, ${colors[n%10]}AA, ${colors[n%10]})`;
+      bubble.style.left = (5 + Math.random() * 80) + '%';
+      bubble.style.top = (5 + Math.random() * 80) + '%';
+      bubble.style.animationDelay = `${i * 0.1}s`;
+
+      bubble.addEventListener('click', function() {
+        if (!bubbleActive) return;
+        const num = parseInt(this.dataset.num);
+        if (num === bubbleNext) {
+          this.style.transform = 'scale(0)';
+          this.style.opacity = '0';
+          this.style.transition = 'all 0.3s ease';
+          setTimeout(() => this.remove(), 300);
+          bubbleNext++;
+          document.getElementById('bubble-next').textContent = bubbleNext <= bubbleMax ? bubbleNext : '🎉';
+          document.getElementById('bubble-score').textContent = num;
+          playSound('count');
+          if (bubbleNext > bubbleMax) {
+            celebrate(`🫧 All ${bubbleMax} bubbles popped! Amazing!`);
+            Progress.addStars(2);
+            bubbleActive = false;
+          }
+        } else {
+          this.style.animation = 'shake 0.4s ease';
+          setTimeout(() => this.style.animation = '', 400);
+          gentleEncourage(`Find number ${bubbleNext} first!`);
+        }
+      });
+
+      container.appendChild(bubble);
+    });
+  }
+
+  document.getElementById('bubble-start')?.addEventListener('click', () => {
+    bubbleActive = true;
+    spawnBubbles();
+    playSound('click');
+  });
+
+  document.getElementById('bubble-reset')?.addEventListener('click', () => {
+    bubbleActive = false;
+    const container = document.getElementById('bubble-container');
+    if (container) container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';
+    document.getElementById('bubble-next').textContent = '1';
+    playSound('click');
+  });
+
+  document.getElementById('bubble-container').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);font-family:var(--font-fun);font-size:1rem;">Click START! to begin 🫧</div>';
+
+  // ── COUNT CHALLENGE ──
+  const challengeEmojis = [
+    ['🍎','🍊','🍋','🍇','🍓','🥝'],
+    ['🐱','🐶','🐰','🐸','🐻','🐨'],
+    ['⭐','🌙','☀️','🌈','❄️','🌺'],
+    ['🎈','🎁','🎉','🎊','🎀','🎵'],
+    ['✏️','📏','📐','📚','✂️','🖍️'],
+  ];
+  let challengeAnswer = 0, challengeScore = 0;
+  let countedItems = 0;
+
+  function loadChallenge() {
+    const emojiSet = challengeEmojis[Math.floor(Math.random() * challengeEmojis.length)];
+    const emoji = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+    const count = Math.floor(Math.random() * 12) + 3;
+    challengeAnswer = count;
+    countedItems = 0;
+
+    const q = document.getElementById('challenge-question');
+    if (q) q.textContent = `How many ${emoji} are there? Click them to count!`;
+
+    const grid = document.getElementById('challenge-grid');
+    if (grid) {
+      grid.innerHTML = '';
+      const shuffled = Array.from({length: count}, () => emoji).sort(() => Math.random() - 0.5);
+      shuffled.forEach((e, i) => {
+        const item = document.createElement('span');
+        item.className = 'challenge-item';
+        item.textContent = e;
+        item.title = `Item ${i+1}`;
+        item.addEventListener('click', function() {
+          if (this.classList.contains('counted')) return;
+          this.classList.add('counted');
+          countedItems++;
+          playSound('count');
+          if (countedItems === count) showToast(`You counted ${count}! Now type it! ✍️`, 'success');
+        });
+        grid.appendChild(item);
+      });
+    }
+
+    const inp = document.getElementById('challenge-input');
+    if (inp) { inp.value = ''; inp.className = 'math-input'; inp.style.width='80px'; inp.style.height='80px'; inp.style.fontSize='2.5rem'; }
+    document.getElementById('challenge-feedback').className = 'feedback';
+  }
+
+  document.getElementById('challenge-check')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('challenge-input')?.value);
+    const fb = document.getElementById('challenge-feedback');
+    const inp = document.getElementById('challenge-input');
+    if (isNaN(val)) { showToast('Type the number!', 'info'); return; }
+    if (val === challengeAnswer) {
+      inp.className = 'math-input correct';
+      fb.className = 'feedback show success';
+      fb.innerHTML = `<span class="feedback-icon">🌟</span> Yes! There are ${challengeAnswer}! Perfect counting!`;
+      challengeScore++;
+      document.getElementById('count-challenge-score').textContent = challengeScore;
+      playSound('correct'); Progress.addStars(1);
+    } else {
+      inp.className = 'math-input wrong';
+      fb.className = 'feedback show error';
+      fb.innerHTML = `<span class="feedback-icon">😊</span> Click each item one by one to count carefully!`;
+      gentleEncourage();
+    }
+  });
+
+  document.getElementById('challenge-new')?.addEventListener('click', () => { loadChallenge(); playSound('click'); });
+  document.getElementById('challenge-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('challenge-check')?.click(); });
+
+  loadChallenge();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parent & Teacher Guide | NumLand 👨‍👩‍👧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .guide-hero {
+      background: linear-gradient(135deg, #E8F0FF, #F3E8FF);
+      padding: var(--space-2xl) var(--space-xl);
+      text-align: center;
+      border-bottom: 3px solid var(--blue-light);
+    }
+    .guide-main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: var(--space-2xl) var(--space-xl);
+    }
+    .guide-intro-card {
+      background: linear-gradient(135deg, white, var(--blue-light));
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      border: 3px solid var(--blue);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-2xl);
+      display: flex;
+      gap: var(--space-lg);
+      align-items: flex-start;
+    }
+    .guide-intro-icon { font-size: 3rem; flex-shrink: 0; }
+    .level-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+    @media (max-width: 600px) { .level-overview-grid { grid-template-columns: 1fr; } }
+    .level-overview-card {
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-card);
+    }
+    .lo-1 { background: linear-gradient(135deg, #FFF8E1, #FFF0CC); border: 2px solid var(--yellow); }
+    .lo-2 { background: linear-gradient(135deg, #E8F8EA, #D0F0D4); border: 2px solid var(--green); }
+    .lo-3 { background: linear-gradient(135deg, #E8F0FF, #D0E4FF); border: 2px solid var(--blue); }
+    .lo-4 { background: linear-gradient(135deg, #F3E8FF, #E8D0FF); border: 2px solid var(--purple); }
+    .lo-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--text-dark); margin-bottom: 8px; }
+    .lo-age { font-family: var(--font-fun); font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 50px; display: inline-block; margin-bottom: 10px; }
+    .lo-1 .lo-age { background: var(--yellow); color: var(--text-dark); }
+    .lo-2 .lo-age { background: var(--green); color: white; }
+    .lo-3 .lo-age { background: var(--blue); color: white; }
+    .lo-4 .lo-age { background: var(--purple); color: white; }
+    .lo-list { list-style: none; }
+    .lo-list li { font-size: 0.85rem; color: var(--text-body); line-height: 1.8; padding-left: 20px; position: relative; }
+    .lo-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green-dark); font-weight: 700; }
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-2xl);
+    }
+    @media (max-width: 600px) { .tip-grid { grid-template-columns: 1fr; } }
+    .tip-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid var(--yellow);
+      transition: transform var(--transition-normal);
+    }
+    .tip-card:hover { transform: translateY(-4px); }
+    .tip-card:nth-child(2) { border-top-color: var(--green); }
+    .tip-card:nth-child(3) { border-top-color: var(--blue); }
+    .tip-card:nth-child(4) { border-top-color: var(--purple); }
+    .tip-card:nth-child(5) { border-top-color: var(--coral); }
+    .tip-card:nth-child(6) { border-top-color: var(--orange); }
+    .tip-icon { font-size: 2rem; margin-bottom: 8px; }
+    .tip-title { font-family: var(--font-fun); font-weight: 700; font-size: 0.95rem; color: var(--text-dark); margin-bottom: 6px; }
+    .tip-text { font-size: 0.85rem; color: var(--text-body); line-height: 1.6; }
+    .faq-item {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--blue);
+      cursor: pointer;
+    }
+    .faq-question {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .faq-answer {
+      font-size: 0.88rem;
+      color: var(--text-body);
+      line-height: 1.7;
+      padding-top: 10px;
+      display: none;
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .faq-toggle { transform: rotate(180deg); }
+    .faq-toggle { transition: transform 0.3s ease; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🦉</div><span class="nav-logo-text">Num<span>Land</span></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+    <li><a href="parents.html" class="nav-link active">Parents</a></li>
+  </ul>
+  <a href="about.html" class="btn btn-secondary btn-sm nav-btn">📚 About</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="parents.html" class="nav-link active">👨‍👩‍👧 Parent Guide</a>
+  <a href="about.html" class="nav-link">📚 About Montessori</a>
+</nav>
+
+<header class="page-header" style="background:linear-gradient(160deg,#E8F0FF,#F3E8FF);">
+  <div class="breadcrumb"><a href="index.html">🏠 Home</a> <span>›</span> Parent Guide</div>
+  <h1 class="page-header-title">👨‍👩‍👧 Parent & Teacher Guide</h1>
+  <p class="page-header-sub">Everything you need to support your child's math journey on NumLand. Tips, level guides, and learning insights.</p>
+</header>
+
+<main class="guide-main">
+
+  <!-- Intro -->
+  <div class="guide-intro-card reveal">
+    <div class="guide-intro-icon">🦉</div>
+    <div>
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;color:var(--text-dark);margin-bottom:8px;">Hello, wonderful grown-up! 👋</h2>
+      <p style="font-size:0.95rem;color:var(--text-body);line-height:1.8;">NumLand is a Montessori-inspired math website designed for children ages 3–10. It focuses on exploration, visual learning, and self-paced discovery rather than rote memorization. This guide helps you understand each level, how to use the site together, and how to support your child's confidence.</p>
+    </div>
+  </div>
+
+  <!-- Level overviews -->
+  <div class="guide-section">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-sm);">📚 What Each Level Covers</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-lg);">Each level is designed for a specific age range, but children should explore at their own pace — not strictly by age.</p>
+
+    <div class="level-overview-grid">
+      <div class="level-overview-card lo-1 reveal">
+        <span class="lo-age">Ages 3–4 ⭐</span>
+        <div class="lo-title">🌟 Level 1 — Number Discovery</div>
+        <ul class="lo-list">
+          <li>Recognizing and counting numbers 1–10</li>
+          <li>Matching quantities to number symbols</li>
+          <li>Color, shape, and size sorting</li>
+          <li>Montessori-style bead counting</li>
+          <li>Shape exploration (circle, square, triangle...)</li>
+          <li>Simple matching games</li>
+        </ul>
+      </div>
+      <div class="level-overview-card lo-2 reveal">
+        <span class="lo-age">Ages 5–6 🌱</span>
+        <div class="lo-title">🌱 Level 2 — Early Math Explorers</div>
+        <ul class="lo-list">
+          <li>Numbers up to 50 on an interactive number line</li>
+          <li>Counting forward AND backward</li>
+          <li>Comparing more, less, and equal</li>
+          <li>Visual addition using fruit objects</li>
+          <li>Visual subtraction with crossed-out items</li>
+          <li>Pattern recognition and completion</li>
+        </ul>
+      </div>
+      <div class="level-overview-card lo-3 reveal">
+        <span class="lo-age">Ages 7–8 🏗️</span>
+        <div class="lo-title">🏗️ Level 3 — Math Builders</div>
+        <ul class="lo-list">
+          <li>Place value with hundreds, tens, ones blocks</li>
+          <li>Skip counting by 2s, 3s, 5s, and 10s</li>
+          <li>Reading analog clocks (15-minute intervals)</li>
+          <li>Visual word problems with hints</li>
+          <li>Number bonds (pairs that make a total)</li>
+        </ul>
+      </div>
+      <div class="level-overview-card lo-4 reveal">
+        <span class="lo-age">Ages 9–10 🗺️</span>
+        <div class="lo-title">🗺️ Level 4 — Math Adventurers</div>
+        <ul class="lo-list">
+          <li>Interactive multiplication table (1–10)</li>
+          <li>Fraction exploration: ½, ⅓, ¼, ¾, ⅕</li>
+          <li>Geometry: 8 shapes with properties</li>
+          <li>Visual division as equal sharing</li>
+          <li>Magic square puzzles for logic thinking</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips for Parents -->
+  <div class="guide-section">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-sm);">💡 Tips for Using NumLand</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-lg);">Here's how to make the most of your child's learning experience.</p>
+
+    <div class="tip-grid">
+      <div class="tip-card reveal">
+        <div class="tip-icon">⏰</div>
+        <div class="tip-title">Short Sessions Work Best</div>
+        <div class="tip-text">15–20 minute sessions are ideal for young children. Their attention and energy is freshest in shorter bursts. End while they're still enjoying it!</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">🤫</div>
+        <div class="tip-title">Let Them Lead</div>
+        <div class="tip-text">Resist the urge to correct immediately. Let children try, struggle a little, and discover answers. The thinking process is as valuable as the answer.</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">💬</div>
+        <div class="tip-title">Talk About the Math</div>
+        <div class="tip-text">Ask open questions: "How did you figure that out?" "Can you show me with your fingers?" "What does this number mean?" Conversation deepens understanding.</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">🔄</div>
+        <div class="tip-title">Repetition is Learning</div>
+        <div class="tip-text">Don't worry if your child does the same activity many times. In Montessori, repetition is how mastery is built. Each time reinforces deeper understanding.</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">🌟</div>
+        <div class="tip-title">Celebrate the Journey</div>
+        <div class="tip-text">Every star earned, every badge collected — celebrate them! Math confidence is built through positive experiences. Focus on effort, not just correct answers.</div>
+      </div>
+      <div class="tip-card reveal">
+        <div class="tip-icon">🔗</div>
+        <div class="tip-title">Connect to Real Life</div>
+        <div class="tip-text">After an activity, find real-world examples: count apples in the kitchen, find shapes on a walk, use coins for adding. This makes math meaningful.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="guide-section">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-sm);">❓ Frequently Asked Questions</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-lg);">Common questions from parents and teachers about NumLand.</p>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">What age is NumLand best for? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">NumLand is designed for children ages 3–10, split across four levels. However, every child is different — a 6-year-old might love Level 1, or a mature 5-year-old might be ready for Level 2. Always follow your child's interest and comfort level rather than strictly adhering to the age guide.</div>
+    </div>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">How is NumLand different from other math apps? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">NumLand is inspired by Montessori principles rather than drilling and memorization. Children explore math concepts through visual manipulatives (beads, blocks, tiles), drag-and-drop activities, and discovery-based games. The tone is calm and encouraging, not competitive or timed. Mistakes are treated as learning opportunities with gentle guidance.</div>
+    </div>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">Can I use NumLand in a classroom? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">Absolutely! NumLand works well as a supplementary classroom tool. Teachers can use it for individual practice time, math centers, or to introduce new concepts visually. The level structure makes it easy to assign age-appropriate activities. The parent/teacher guide section provides context for each concept covered.</div>
+    </div>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">How does the star and reward system work? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">Children earn stars by completing activities correctly. Stars are saved locally in the browser (no account needed). Stars unlock badges and grow the garden reward. The rewards are designed to motivate without creating anxiety — there are no penalties for wrong answers, only gentle encouragement to try again.</div>
+    </div>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">Is there sound/audio support? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">NumLand uses subtle sound effects powered by the Web Audio API — gentle tones for counting, success chimes for correct answers, and soft sounds for encouragement. These are activated on first click to respect browser autoplay policies. The sounds are simple and non-distracting, suitable for classroom environments.</div>
+    </div>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">Does NumLand work on tablets and phones? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">Yes! NumLand is fully responsive. The large buttons, readable fonts, and touch-friendly interactions are designed for fingers of all sizes. Drag-and-drop activities support both mouse and touch input. The layout adapts beautifully from large desktop screens to small phones.</div>
+    </div>
+
+    <div class="faq-item reveal" onclick="toggleFaq(this)">
+      <div class="faq-question">My child keeps doing the same activity over and over. Is that OK? <span class="faq-toggle">▼</span></div>
+      <div class="faq-answer">This is wonderful and perfectly aligned with Montessori principles! Repetition is a key learning mechanism for young children. When a child returns to an activity repeatedly, they're deepening their understanding and building mastery. Follow their lead and celebrate their focus and persistence!</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="background:linear-gradient(135deg,var(--blue-light),var(--purple-light));border-radius:var(--radius-xl);padding:var(--space-2xl);text-align:center;margin-bottom:var(--space-xl);">
+    <h2 style="font-family:var(--font-display);font-size:1.6rem;color:var(--text-dark);margin-bottom:12px;">Ready to explore together?</h2>
+    <p style="font-size:0.92rem;color:var(--text-body);margin-bottom:var(--space-lg);">Sit beside your child as they explore NumLand. Ask questions, celebrate discoveries, and enjoy the math journey together!</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="level1.html" class="btn btn-primary">🌟 Start Level 1</a>
+      <a href="about.html" class="btn btn-secondary">📚 Learn About Montessori</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+function toggleFaq(item) {
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+  playSound('click');
+}
+</script>
+</body>
+</html>

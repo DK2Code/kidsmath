@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 1 — Number Discovery | NumLand 🌟</title>
+  <meta name="description" content="Level 1: Number Discovery for ages 3-4. Count stars, match numbers, sort shapes, and explore beads!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    :root {
+      --level-color: var(--yellow);
+      --level-dark: var(--yellow-dark);
+      --level-light: var(--yellow-light);
+      --level-bg: var(--level1-bg);
+    }
+
+    .activity-tab.active { background: var(--yellow); border-color: var(--yellow-dark); }
+
+    /* Number card grid */
+    .num-cards-area {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: var(--space-lg);
+    }
+
+    @media (max-width: 600px) {
+      .num-cards-area { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* Color sorting */
+    .sort-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      padding: var(--space-lg);
+      background: var(--bg-cream);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-md);
+      min-height: 80px;
+    }
+
+    .sort-item {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      cursor: grab;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-bounce);
+      border: 3px solid transparent;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .sort-item:hover { transform: scale(1.15); }
+    .sort-item:active { cursor: grabbing; transform: scale(0.95); }
+
+    .sort-buckets {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .sort-bucket {
+      border: 3px dashed;
+      border-radius: var(--radius-xl);
+      padding: var(--space-md);
+      min-width: 120px;
+      min-height: 100px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-normal);
+      background: white;
+    }
+
+    .sort-bucket-label {
+      display: block;
+      text-align: center;
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+
+    /* Shape recognition */
+    .shapes-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-lg);
+      justify-content: center;
+      padding: var(--space-lg);
+    }
+
+    .shape-card {
+      width: 120px;
+      height: 120px;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 3px solid var(--yellow-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-bounce);
+      text-align: center;
+      gap: 8px;
+    }
+
+    .shape-card:hover {
+      transform: scale(1.1);
+      border-color: var(--yellow);
+      box-shadow: var(--shadow-md);
+    }
+
+    .shape-card.selected {
+      background: var(--yellow-light);
+      border-color: var(--yellow-dark);
+      transform: scale(1.08);
+    }
+
+    .shape-svg {
+      width: 60px;
+      height: 60px;
+    }
+
+    .shape-name {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text-dark);
+    }
+
+    /* Bead section */
+    .bead-section {
+      background: linear-gradient(135deg, #FFF8E1, #FFF0CC);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      border: 3px solid var(--yellow);
+    }
+
+    .bead-question {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--text-dark);
+      text-align: center;
+      margin-bottom: var(--space-lg);
+      padding: 12px;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Tracing section */
+    .tracing-numbers {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-lg);
+    }
+
+    .trace-num-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      background: white;
+      border: 3px solid var(--yellow-light);
+      cursor: pointer;
+      transition: all var(--transition-bounce);
+      color: var(--text-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .trace-num-btn:hover { transform: scale(1.1); border-color: var(--yellow); background: var(--yellow-light); }
+    .trace-num-btn.active { background: var(--yellow); border-color: var(--yellow-dark); transform: scale(1.1); }
+
+    /* Welcome mascot banner */
+    .level-welcome {
+      background: linear-gradient(135deg, var(--yellow-light), #FFF0CC);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--yellow);
+    }
+
+    .level-welcome-icon {
+      font-size: 4rem;
+      flex-shrink: 0;
+      animation: wiggle 4s ease-in-out infinite;
+    }
+
+    .level-welcome-text h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .level-welcome-text p {
+      font-size: 0.92rem;
+      color: var(--text-body);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🦉</div>
+    <span class="nav-logo-text">Num<span>Land</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link active">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+    <li><a href="rewards.html" class="nav-link">⭐ Rewards</a></li>
+  </ul>
+  <a href="rewards.html" class="btn btn-primary btn-sm nav-btn">⭐ <span data-star-count>0</span> Stars</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="level1.html" class="nav-link active">🌟 Level 1</a>
+  <a href="level2.html" class="nav-link">🌱 Level 2</a>
+  <a href="level3.html" class="nav-link">🏗️ Level 3</a>
+  <a href="level4.html" class="nav-link">🗺️ Level 4</a>
+  <a href="games.html" class="nav-link">🎮 Games</a>
+  <a href="rewards.html" class="nav-link">⭐ Rewards</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<header class="page-header level1-bg" id="counting">
+  <div class="breadcrumb">
+    <a href="index.html">🏠 Home</a> <span>›</span> Level 1
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:8px;background:var(--yellow);color:var(--text-dark);font-family:var(--font-fun);font-weight:700;font-size:0.82rem;padding:6px 16px;border-radius:50px;margin-bottom:12px;">⭐ Ages 3–4</div>
+  <h1 class="page-header-title">🌟 Number Discovery</h1>
+  <p class="page-header-sub">Let's count together! Explore numbers 1–10 through beads, cards, matching, and sorting. Every activity is a new adventure!</p>
+
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">📿 Bead Counting</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🔢 Number Cards</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🎨 Color Sorting</div>
+    <div style="background:white;border-radius:50px;padding:8px 18px;font-family:var(--font-fun);font-weight:700;font-size:0.82rem;color:var(--text-dark);box-shadow:var(--shadow-sm);">🔷 Shapes</div>
+  </div>
+</header>
+
+<!-- ACTIVITY AREA -->
+<main class="activity-container" id="main-content">
+
+  <!-- Welcome Banner -->
+  <div class="level-welcome reveal">
+    <div class="level-welcome-icon">🦉</div>
+    <div class="level-welcome-text">
+      <h2>Hi there, Explorer! 👋</h2>
+      <p>I'm Ollie the Owl, your learning friend! Let's discover numbers together. Click each activity below to start. Remember — there's no rush! Take your time and have fun! 🌟</p>
+    </div>
+  </div>
+
+  <!-- Activity Tab Navigation -->
+  <div class="activity-tabs reveal" role="tablist" aria-label="Level 1 Activities">
+    <button class="activity-tab active" data-tab="act-counting" role="tab" aria-selected="true">🌟 Count Stars</button>
+    <button class="activity-tab" data-tab="act-numbers" role="tab" aria-selected="false">🔢 Number Cards</button>
+    <button class="activity-tab" data-tab="act-matching" role="tab" aria-selected="false">🎯 Matching Game</button>
+    <button class="activity-tab" data-tab="act-beads" role="tab" aria-selected="false">📿 Bead Counting</button>
+    <button class="activity-tab" data-tab="act-sorting" role="tab" aria-selected="false">🎨 Color Sorting</button>
+    <button class="activity-tab" data-tab="act-shapes" role="tab" aria-selected="false">🔷 Shapes</button>
+  </div>
+
+  <!-- ================================================
+       ACTIVITY 1: COUNTING STARS
+  ================================================ -->
+  <div class="activity-panel active" id="act-counting" role="tabpanel">
+    <div class="activity-card">
+      <h2 class="activity-title">🌟 Count the Stars!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Let's count together!</strong> Click each star one by one. Watch the number grow!</span>
+      </div>
+
+      <div class="score-display">
+        <div class="score-item"><span class="score-icon">⭐</span><span class="score-value" id="count-stars-score">0 Stars Earned</span></div>
+      </div>
+
+      <!-- Counting activity 1: 5 stars -->
+      <div id="count-activity-1">
+        <h3 style="font-family:var(--font-fun);font-weight:700;color:var(--text-dark);margin-bottom:12px;text-align:center;">
+          Count these 5 stars 👇
+        </h3>
+        <div class="counting-area" id="count-area-1">
+          <!-- Populated by JS -->
+        </div>
+        <div class="count-display">
+          <span class="count-number" id="count-num-1">0</span>
+          <span class="count-label">stars counted</span>
+        </div>
+        <div style="text-align:center;">
+          <button class="btn btn-secondary btn-sm reset-btn">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback" id="count-feedback-1"></div>
+    </div>
+
+    <!-- Second counting activity -->
+    <div class="activity-card">
+      <h2 class="activity-title">🌈 Count 10 Objects!</h2>
+      <div class="activity-instruction green">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Can you count to 10?</strong> Click each colorful item to count it!</span>
+      </div>
+
+      <div id="count-activity-2">
+        <div class="counting-area" id="count-area-2"><!-- Populated by JS --></div>
+        <div class="count-display">
+          <span class="count-number" id="count-num-2">0</span>
+          <span class="count-label">counted</span>
+        </div>
+        <div style="text-align:center;margin-top:8px;">
+          <button class="btn btn-secondary btn-sm reset-btn-2">↺ Start Over</button>
+        </div>
+      </div>
+      <div class="feedback" id="count-feedback-2"></div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ACTIVITY 2: NUMBER CARDS
+  ================================================ -->
+  <div class="activity-panel" id="act-numbers" role="tabpanel">
+    <div class="activity-card">
+      <h2 class="activity-title">🔢 Meet the Numbers!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Click any number card</strong> to see how many dots it has. Numbers show how many things there are!</span>
+      </div>
+
+      <div class="num-cards-area" id="num-cards-grid" role="grid" aria-label="Number cards 1 to 10">
+        <!-- Populated by JS -->
+      </div>
+
+      <div id="num-card-selected" style="text-align:center;padding:var(--space-lg);background:var(--yellow-light);border-radius:var(--radius-lg);min-height:80px;display:none;">
+        <p id="num-card-msg" style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ACTIVITY 3: MATCHING GAME
+  ================================================ -->
+  <div class="activity-panel" id="act-matching" role="tabpanel">
+    <div class="activity-card">
+      <h2 class="activity-title">🎯 Number Matching!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Can you match the number to the right group?</strong> Click a number, then click the matching picture group!</span>
+      </div>
+
+      <div class="matching-game" id="matching-container">
+        <div class="match-column" id="match-numbers" role="group" aria-label="Number cards"></div>
+        <div class="match-connector" aria-hidden="true">🔗</div>
+        <div class="match-column" id="match-items" role="group" aria-label="Object groups"></div>
+      </div>
+
+      <div class="feedback" id="matching-feedback"></div>
+
+      <div style="text-align:center;margin-top:var(--space-lg);">
+        <button class="btn btn-secondary" id="new-match-btn">🔀 New Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ACTIVITY 4: BEAD COUNTING
+  ================================================ -->
+  <div class="activity-panel" id="act-beads" role="tabpanel">
+    <div class="activity-card">
+      <h2 class="activity-title">📿 Montessori Bead Counting!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Click the beads to count them!</strong> Just like the real Montessori bead chains. Each row is a different number!</span>
+      </div>
+
+      <div class="bead-section">
+        <div class="bead-question" id="bead-question">
+          Click the beads on each rod to count them. How many in total?
+        </div>
+
+        <div id="bead-rods" class="bead-rods"><!-- Populated by JS --></div>
+
+        <div style="text-align:center;margin-top:var(--space-lg);">
+          <span style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);">Total beads: </span>
+          <span id="bead-total" style="font-family:var(--font-display);font-size:2.5rem;color:var(--yellow-dark);">0</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:var(--space-lg);">
+        <p style="font-size:0.88rem;color:var(--text-light);">💡 Try making all 3 rods show the same amount, or try filling all beads!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ACTIVITY 5: COLOR SORTING
+  ================================================ -->
+  <div class="activity-panel" id="act-sorting" role="tabpanel">
+    <div class="activity-card">
+      <h2 class="activity-title">🎨 Sort by Color!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Drag each shape</strong> into the bucket that matches its color! Red with red, blue with blue!</span>
+      </div>
+
+      <div class="sort-items" id="sort-items-area">
+        <div class="sort-item" draggable="true" data-value="red" style="background:linear-gradient(135deg,#FF9999,#FF6B6B);" title="Red circle">🔴</div>
+        <div class="sort-item" draggable="true" data-value="blue" style="background:linear-gradient(135deg,#99C6FF,#4D96FF);" title="Blue circle">🔵</div>
+        <div class="sort-item" draggable="true" data-value="red" style="background:linear-gradient(135deg,#FF9999,#FF6B6B);" title="Red heart">❤️</div>
+        <div class="sort-item" draggable="true" data-value="yellow" style="background:linear-gradient(135deg,#FFE87A,#FFD93D);" title="Yellow star">⭐</div>
+        <div class="sort-item" draggable="true" data-value="blue" style="background:linear-gradient(135deg,#99C6FF,#4D96FF);" title="Blue diamond">💎</div>
+        <div class="sort-item" draggable="true" data-value="yellow" style="background:linear-gradient(135deg,#FFE87A,#FFD93D);" title="Yellow flower">🌻</div>
+        <div class="sort-item" draggable="true" data-value="red" style="background:linear-gradient(135deg,#FF9999,#FF6B6B);" title="Red apple">🍎</div>
+        <div class="sort-item" draggable="true" data-value="blue" style="background:linear-gradient(135deg,#99C6FF,#4D96FF);" title="Blue drop">💧</div>
+        <div class="sort-item" draggable="true" data-value="yellow" style="background:linear-gradient(135deg,#FFE87A,#FFD93D);" title="Yellow sun">☀️</div>
+      </div>
+
+      <div class="sort-buckets">
+        <div>
+          <span class="sort-bucket-label" style="color:#E84040;">🔴 Red</span>
+          <div class="sort-bucket drop-zone" data-accepts="red" style="border-color:#FF6B6B;min-width:140px;">
+            <span style="color:var(--text-light);font-size:0.82rem;">Drop red items here</span>
+          </div>
+        </div>
+        <div>
+          <span class="sort-bucket-label" style="color:#1A6FD4;">🔵 Blue</span>
+          <div class="sort-bucket drop-zone" data-accepts="blue" style="border-color:#4D96FF;min-width:140px;">
+            <span style="color:var(--text-light);font-size:0.82rem;">Drop blue items here</span>
+          </div>
+        </div>
+        <div>
+          <span class="sort-bucket-label" style="color:#D4A800;">⭐ Yellow</span>
+          <div class="sort-bucket drop-zone" data-accepts="yellow" style="border-color:#FFD93D;min-width:140px;">
+            <span style="color:var(--text-light);font-size:0.82rem;">Drop yellow items here</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:var(--space-lg);">
+        <button class="btn btn-secondary" onclick="resetSorting()">↺ Reset Sorting</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ACTIVITY 6: SHAPE RECOGNITION
+  ================================================ -->
+  <div class="activity-panel" id="act-shapes" role="tabpanel">
+    <div class="activity-card">
+      <h2 class="activity-title">🔷 Shape Explorer!</h2>
+      <div class="activity-instruction">
+        <span style="font-size:1.5rem;">🦉</span>
+        <span><strong>Click each shape</strong> to learn its name! Shapes are everywhere in our world!</span>
+      </div>
+
+      <div class="shapes-area" id="shapes-area" role="grid" aria-label="Shape exploration cards">
+        <div class="shape-card" data-shape="circle" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <circle cx="30" cy="30" r="26" fill="#FFD93D" stroke="#F5B900" stroke-width="3"/>
+          </svg>
+          <span class="shape-name">Circle</span>
+        </div>
+        <div class="shape-card" data-shape="square" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <rect x="7" y="7" width="46" height="46" rx="4" fill="#FF6B6B" stroke="#E84040" stroke-width="3"/>
+          </svg>
+          <span class="shape-name">Square</span>
+        </div>
+        <div class="shape-card" data-shape="triangle" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <polygon points="30,4 56,54 4,54" fill="#6BCB77" stroke="#3DA84B" stroke-width="3" stroke-linejoin="round"/>
+          </svg>
+          <span class="shape-name">Triangle</span>
+        </div>
+        <div class="shape-card" data-shape="rectangle" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <rect x="4" y="14" width="52" height="32" rx="4" fill="#4D96FF" stroke="#1A6FD4" stroke-width="3"/>
+          </svg>
+          <span class="shape-name">Rectangle</span>
+        </div>
+        <div class="shape-card" data-shape="star" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <polygon points="30,4 37,22 56,22 41,33 47,52 30,41 13,52 19,33 4,22 23,22" fill="#FF9E4F" stroke="#D96E1A" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          <span class="shape-name">Star</span>
+        </div>
+        <div class="shape-card" data-shape="oval" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <ellipse cx="30" cy="30" rx="27" ry="18" fill="#C77DFF" stroke="#9B3FE8" stroke-width="3"/>
+          </svg>
+          <span class="shape-name">Oval</span>
+        </div>
+        <div class="shape-card" data-shape="heart" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <path d="M30,50 C10,38 4,24 8,16 C12,8 22,6 30,16 C38,6 48,8 52,16 C56,24 50,38 30,50Z" fill="#FF8FAB" stroke="#D45070" stroke-width="2"/>
+          </svg>
+          <span class="shape-name">Heart</span>
+        </div>
+        <div class="shape-card" data-shape="diamond" onclick="exploreShape(this)" role="button" tabindex="0">
+          <svg class="shape-svg" viewBox="0 0 60 60" aria-hidden="true">
+            <polygon points="30,4 56,30 30,56 4,30" fill="#4D96FF" stroke="#1A6FD4" stroke-width="3"/>
+          </svg>
+          <span class="shape-name">Diamond</span>
+        </div>
+      </div>
+
+      <div id="shape-info" style="text-align:center;padding:var(--space-lg);background:var(--yellow-light);border-radius:var(--radius-lg);margin-top:var(--space-md);display:none;">
+        <!-- Shape info populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation to next level -->
+  <div style="text-align:center;padding:var(--space-xl) 0;border-top:2px dashed var(--yellow-light);margin-top:var(--space-lg);">
+    <p style="font-family:var(--font-fun);font-weight:700;color:var(--text-body);margin-bottom:var(--space-md);">
+      🎉 Great exploring! Ready for more challenges?
+    </p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="rewards.html" class="btn btn-secondary">⭐ See My Stars</a>
+      <a href="level2.html" class="btn btn-green">🌱 Try Level 2 →</a>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ─── COUNTING ACTIVITY 1 (5 stars) ───────────────────
+  let count1 = 0;
+  const area1 = document.getElementById('count-area-1');
+  const numEl1 = document.getElementById('count-num-1');
+  const emojis1 = ['⭐','⭐','⭐','⭐','⭐'];
+
+  area1.innerHTML = '';
+  emojis1.forEach((e, i) => {
+    const obj = document.createElement('div');
+    obj.className = 'count-obj';
+    obj.textContent = e;
+    obj.setAttribute('aria-label', `Star ${i+1}`);
+    obj.setAttribute('role', 'button');
+    obj.setAttribute('tabindex', '0');
+    obj.addEventListener('click', function() {
+      if (this.classList.contains('counted')) return;
+      this.classList.add('counted');
+      count1++;
+      numEl1.textContent = count1;
+      numEl1.classList.remove('update');
+      void numEl1.offsetWidth;
+      numEl1.classList.add('update');
+      playSound('count');
+      if (count1 === 5) {
+        const fb = document.getElementById('count-feedback-1');
+        fb.className = 'feedback show success';
+        fb.innerHTML = '<span class="feedback-icon">🌟</span> Amazing! You counted all 5 stars! Great job!';
+        celebrate('🌟 5 Stars counted! You\'re a counting star!');
+        Progress.addStars(1);
+        document.getElementById('count-stars-score').textContent = '1 Star Earned! ⭐';
+      }
+    });
+    obj.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') this.click(); });
+    area1.appendChild(obj);
+  });
+
+  document.querySelector('.reset-btn').addEventListener('click', () => {
+    count1 = 0;
+    numEl1.textContent = '0';
+    area1.querySelectorAll('.count-obj').forEach(o => o.classList.remove('counted'));
+    document.getElementById('count-feedback-1').className = 'feedback';
+    playSound('click');
+  });
+
+  // ─── COUNTING ACTIVITY 2 (10 items) ───────────────────
+  let count2 = 0;
+  const area2 = document.getElementById('count-area-2');
+  const numEl2 = document.getElementById('count-num-2');
+  const emojiSet2 = ['🍎','🍊','🍋','🍇','🍓','🥝','🫐','🍑','🍒','🥭'];
+
+  area2.innerHTML = '';
+  emojiSet2.forEach((e, i) => {
+    const obj = document.createElement('div');
+    obj.className = 'count-obj';
+    obj.textContent = e;
+    obj.setAttribute('aria-label', `Fruit ${i+1}: ${e}`);
+    obj.setAttribute('role', 'button');
+    obj.setAttribute('tabindex', '0');
+    obj.addEventListener('click', function() {
+      if (this.classList.contains('counted')) return;
+      this.classList.add('counted');
+      count2++;
+      numEl2.textContent = count2;
+      numEl2.classList.remove('update');
+      void numEl2.offsetWidth;
+      numEl2.classList.add('update');
+      playSound('count');
+      if (count2 === 10) {
+        const fb = document.getElementById('count-feedback-2');
+        fb.className = 'feedback show success';
+        fb.innerHTML = '<span class="feedback-icon">🎉</span> WOW! You counted all 10 fruits! You\'re a super counter!';
+        celebrate('🎉 10 fruits counted! You\'re incredible!');
+        Progress.addStars(2);
+      }
+    });
+    obj.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') this.click(); });
+    area2.appendChild(obj);
+  });
+
+  document.querySelector('.reset-btn-2').addEventListener('click', () => {
+    count2 = 0;
+    numEl2.textContent = '0';
+    area2.querySelectorAll('.count-obj').forEach(o => o.classList.remove('counted'));
+    document.getElementById('count-feedback-2').className = 'feedback';
+    playSound('click');
+  });
+
+  // ─── NUMBER CARDS ──────────────────────────────────────
+  const numGrid = document.getElementById('num-cards-grid');
+  const numFacts = {
+    1: { dot: 1, msg: "ONE! 1 is the first number — like the Sun in our sky! ☀️", emoji: '🌟' },
+    2: { dot: 2, msg: "TWO! 2 is like a pair — you have 2 eyes, 2 hands! 👀", emoji: '🦋' },
+    3: { dot: 3, msg: "THREE! 3 is like a triangle — count its sides! 🔺", emoji: '🌈' },
+    4: { dot: 4, msg: "FOUR! A square has 4 sides. A dog has 4 legs! 🐕", emoji: '🍀' },
+    5: { dot: 5, msg: "FIVE! Count your fingers on one hand — that's 5! ✋", emoji: '⭐' },
+    6: { dot: 6, msg: "SIX! A honeycomb has 6 sides. Bees love 6! 🐝", emoji: '🌺' },
+    7: { dot: 7, msg: "SEVEN! A rainbow has 7 colors. Can you name them? 🌈", emoji: '🦄' },
+    8: { dot: 8, msg: "EIGHT! A spider has 8 legs. Count them! 🕷️", emoji: '🎈' },
+    9: { dot: 9, msg: "NINE! 9 is SO close to 10! Just one more! 😊", emoji: '🌙' },
+    10: { dot: 10, msg: "TEN! 10 fingers, 10 toes — that's a wonderful number! 🙌", emoji: '🎉' },
+  };
+
+  const dotColors = ['#FF6B6B','#FF9E4F','#FFD93D','#6BCB77','#4D96FF','#C77DFF','#FF8FAB','#6BCB77','#4D96FF','#FF6B6B'];
+
+  for (let n = 1; n <= 10; n++) {
+    const card = document.createElement('div');
+    card.className = 'number-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `Number ${n}`);
+
+    // Number
+    const numSpan = document.createElement('span');
+    numSpan.textContent = n;
+    card.appendChild(numSpan);
+
+    // Dots
+    const dotsDiv = document.createElement('div');
+    dotsDiv.className = 'dots';
+    for (let d = 0; d < n; d++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = dotColors[n - 1];
+      dotsDiv.appendChild(dot);
+    }
+    card.appendChild(dotsDiv);
+
+    card.addEventListener('click', function() {
+      numGrid.querySelectorAll('.number-card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+      const info = document.getElementById('num-card-selected');
+      const msg = document.getElementById('num-card-msg');
+      const fact = numFacts[n];
+      info.style.display = 'block';
+      msg.innerHTML = `${fact.emoji} ${fact.msg}`;
+      info.style.animation = 'none';
+      void info.offsetWidth;
+      info.style.animation = 'fadeSlideIn 0.3s ease';
+      playSound('select');
+    });
+
+    card.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') this.click(); });
+    numGrid.appendChild(card);
+  }
+
+  // ─── MATCHING GAME ─────────────────────────────────────
+  initNumberMatch('matching-container');
+  document.getElementById('new-match-btn')?.addEventListener('click', () => {
+    initNumberMatch('matching-container');
+    playSound('click');
+  });
+
+  // ─── BEAD COUNTING ─────────────────────────────────────
+  const beadContainer = { querySelector: (s) => document.querySelector(`#act-beads ${s}`) };
+
+  // Manually init bead rods
+  const beadRodsEl = document.getElementById('bead-rods');
+  const beadTotalEl = document.getElementById('bead-total');
+  if (beadRodsEl) {
+    const rods = [
+      { count: 5, color: 'red', label: 'Rod A (5 beads)' },
+      { count: 7, color: 'blue', label: 'Rod B (7 beads)' },
+      { count: 3, color: 'green', label: 'Rod C (3 beads)' },
+    ];
+
+    let grandTotal = 0;
+    beadRodsEl.innerHTML = '';
+
+    rods.forEach((rod, ri) => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin-bottom:16px;';
+
+      const labelEl = document.createElement('div');
+      labelEl.style.cssText = 'font-family:var(--font-fun);font-weight:700;font-size:0.85rem;color:var(--text-light);margin-bottom:8px;';
+      labelEl.textContent = rod.label;
+      wrap.appendChild(labelEl);
+
+      const rodDiv = document.createElement('div');
+      rodDiv.className = 'bead-rod';
+
+      const line = document.createElement('div');
+      line.className = 'bead-rod-line';
+      rodDiv.appendChild(line);
+
+      for (let i = 0; i < rod.count; i++) {
+        const bead = document.createElement('div');
+        bead.className = 'bead inactive';
+        bead.setAttribute('aria-label', `Bead ${i+1} on rod ${ri+1}`);
+        bead.setAttribute('role', 'button');
+        bead.setAttribute('tabindex', '0');
+
+        bead.addEventListener('click', function() {
+          const beads = rodDiv.querySelectorAll('.bead');
+          const activeCount = rodDiv.querySelectorAll('.bead:not(.inactive)').length;
+          const idx = Array.from(beads).indexOf(this);
+
+          if (idx < activeCount) {
+            // Deactivate from right to this index
+            for (let j = activeCount - 1; j >= idx; j--) {
+              beads[j].className = 'bead inactive';
+              grandTotal--;
+            }
+          } else {
+            // Activate up to this index
+            for (let j = activeCount; j <= idx; j++) {
+              beads[j].className = `bead active ${rod.color}`;
+              grandTotal++;
+            }
+          }
+          if (beadTotalEl) beadTotalEl.textContent = grandTotal;
+          playSound('count');
+        });
+        bead.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') bead.click(); });
+
+        rodDiv.appendChild(bead);
+      }
+
+      wrap.appendChild(rodDiv);
+      beadRodsEl.appendChild(wrap);
+    });
+  }
+
+  // ─── COLOR SORTING ─────────────────────────────────────
+  initDragSort(document.getElementById('act-sorting'));
+
+  // ─── SHAPES ────────────────────────────────────────────
+  // Handled by global exploreShape function below
+});
+
+// Shape exploration
+const shapeInfo = {
+  circle: { msg: "A circle is perfectly round! It has no corners or sides. Like a wheel, a coin, or the Sun! ☀️", color: '#FFD93D' },
+  square: { msg: "A square has 4 equal sides and 4 corners. All sides are the same length! 📦", color: '#FF6B6B' },
+  triangle: { msg: "A triangle has 3 sides and 3 corners. Mountains and pizza slices are triangles! 🏔️", color: '#6BCB77' },
+  rectangle: { msg: "A rectangle has 4 sides — 2 long sides and 2 short sides. A door is a rectangle! 🚪", color: '#4D96FF' },
+  star: { msg: "A star has 5 points! Stars shine bright in the night sky. ✨", color: '#FF9E4F' },
+  oval: { msg: "An oval is like a stretched circle! Eggs are oval-shaped. 🥚", color: '#C77DFF' },
+  heart: { msg: "A heart shape shows love! It has two bumps at the top and comes to a point at the bottom. ❤️", color: '#FF8FAB' },
+  diamond: { msg: "A diamond is a square standing on its corner! Playing card suits include diamonds. 💎", color: '#4D96FF' },
+};
+
+function exploreShape(el) {
+  document.querySelectorAll('.shape-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const type = el.dataset.shape;
+  const info = document.getElementById('shape-info');
+  const data = shapeInfo[type];
+  if (data && info) {
+    info.style.display = 'block';
+    info.innerHTML = `<p style="font-family:var(--font-fun);font-weight:700;font-size:1rem;color:var(--text-dark);">${data.msg}</p>`;
+    info.style.background = data.color + '22';
+    info.style.border = `2px solid ${data.color}`;
+    info.style.animation = 'none';
+    void info.offsetWidth;
+    info.style.animation = 'fadeSlideIn 0.3s ease';
+    playSound('select');
+    Progress.addStars(0); // Exploration doesn't cost, but rewards feel
+  }
+}
+
+// Reset sorting
+function resetSorting() {
+  const sortArea = document.getElementById('sort-items-area');
+  const items = document.querySelectorAll('.sort-item');
+  items.forEach(item => {
+    sortArea.appendChild(item);
+  });
+  playSound('click');
+}
+
+// Sorting drag support
+document.addEventListener('DOMContentLoaded', () => {
+  const items = document.querySelectorAll('.sort-item');
+  const zones = document.querySelectorAll('#act-sorting .drop-zone');
+  let dragged = null;
+
+  items.forEach(item => {
+    item.addEventListener('dragstart', function(e) {
+      dragged = this;
+      this.style.opacity = '0.5';
+      e.dataTransfer.setData('text/plain', this.dataset.value);
+    });
+    item.addEventListener('dragend', function() {
+      this.style.opacity = '1';
+    });
+  });
+
+  zones.forEach(zone => {
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', function() {
+      this.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+      if (!dragged) return;
+      const expected = this.dataset.accepts;
+      const value = dragged.dataset.value;
+
+      if (expected === value) {
+        this.appendChild(dragged);
+        this.classList.add('correct');
+        playSound('correct');
+        showToast('🌟 Great sorting!', 'success');
+        Progress.addStars(1);
+      } else {
+        this.classList.add('wrong');
+        gentleEncourage('😊 Look at the color — try again!');
+      }
+      setTimeout(() => { this.classList.remove('correct', 'wrong'); }, 1000);
+      dragged = null;
+    });
+  });
+});
+</script>
+</body>
+</html>

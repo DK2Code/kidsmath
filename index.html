@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NumLand — Montessori Math for Kids 🌟</title>
+  <meta name="description" content="Fun, interactive Montessori-style math for kids ages 3–10. Learn numbers, counting, addition, and more through playful exploration!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* Homepage-specific styles */
+    .hero-owl {
+      width: 260px;
+      height: 260px;
+      position: relative;
+    }
+
+    .mascot-speak-bubble {
+      position: absolute;
+      top: -20px;
+      right: -80px;
+      background: white;
+      border-radius: 20px 20px 20px 4px;
+      padding: 12px 18px;
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-dark);
+      box-shadow: var(--shadow-card);
+      border: 2px solid var(--yellow);
+      white-space: nowrap;
+      animation: floatBubble 3s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    .mascot-speak-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 16px;
+      border: 10px solid transparent;
+      border-top-color: white;
+      border-bottom: none;
+    }
+
+    /* Activity preview interactive elements */
+    .preview-counter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .preview-stars {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .preview-star {
+      font-size: 2.5rem;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-block;
+    }
+
+    .preview-star:hover { transform: scale(1.3) rotate(20deg); }
+    .preview-star.lit { animation: starBurst 0.4s ease; }
+
+    .preview-count {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      color: var(--yellow-dark);
+      line-height: 1;
+      text-shadow: 2px 4px 0 rgba(245, 185, 0, 0.3);
+    }
+
+    /* Number line preview */
+    .num-line {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: white;
+      border-radius: var(--radius-full);
+      padding: 8px 12px;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid var(--green);
+    }
+
+    .num-line-item {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
+    }
+
+    .num-line-item:hover {
+      background: var(--green-light);
+      transform: scale(1.3);
+      color: var(--green-dark);
+    }
+
+    .num-line-item.active {
+      background: var(--green);
+      color: white;
+      transform: scale(1.2);
+    }
+
+    /* Floating decorative elements */
+    .decoration {
+      position: absolute;
+      pointer-events: none;
+      font-size: 2rem;
+      opacity: 0;
+      animation: revealDecor 0.5s ease forwards;
+    }
+
+    @keyframes revealDecor {
+      to { opacity: 1; }
+    }
+
+    /* Stats section */
+    .stats-bar {
+      background: var(--text-dark);
+      padding: 24px var(--space-xl);
+    }
+
+    .stats-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .stat-item {
+      text-align: center;
+      color: white;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--yellow);
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 48px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Learning path section */
+    .learning-path {
+      background: var(--bg-white);
+      padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .path-steps {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .path-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 180px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .path-step + .path-step::before {
+      content: '→';
+      position: absolute;
+      left: -24px;
+      top: 32px;
+      font-size: 1.5rem;
+      color: var(--text-light);
+    }
+
+    .path-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-md);
+      border: 3px solid white;
+      transition: transform var(--transition-bounce);
+    }
+
+    .path-circle:hover { transform: scale(1.15) rotate(10deg); }
+
+    .path-step:nth-child(1) .path-circle { background: linear-gradient(135deg, #FFD93D, #FF9E4F); }
+    .path-step:nth-child(2) .path-circle { background: linear-gradient(135deg, #6BCB77, #4CC98A); }
+    .path-step:nth-child(3) .path-circle { background: linear-gradient(135deg, #4D96FF, #6B8EFF); }
+    .path-step:nth-child(4) .path-circle { background: linear-gradient(135deg, #C77DFF, #9B5FFF); }
+    .path-step:nth-child(5) .path-circle { background: linear-gradient(135deg, #FF6B6B, #FF9E4F); }
+
+    .path-title {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .path-desc {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      line-height: 1.5;
+    }
+
+    /* Device frame for demo */
+    .device-frame {
+      background: #1A1A2E;
+      border-radius: 32px;
+      padding: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .device-screen {
+      background: var(--bg-cream);
+      border-radius: 22px;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    /* Activity card preview mini */
+    .mini-activity {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+    }
+
+    .mini-activity-title {
+      font-family: var(--font-fun);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini-numbers {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mini-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mini-num:hover { transform: scale(1.2); }
+
+    .mn-1 { background: #FFE082; color: #F59F00; }
+    .mn-2 { background: #A5D6A7; color: #2E7D32; }
+    .mn-3 { background: #90CAF9; color: #1565C0; }
+    .mn-4 { background: #CE93D8; color: #6A1B9A; }
+    .mn-5 { background: #FFCC80; color: #E65100; }
+  </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo" aria-label="NumLand Home">
+    <div class="nav-logo-icon">🦉</div>
+    <span class="nav-logo-text">Num<span>Land</span></span>
+  </a>
+
+  <ul class="nav-links" role="list">
+    <li><a href="index.html" class="nav-link active">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="games.html" class="nav-link">🎮 Games</a></li>
+    <li><a href="rewards.html" class="nav-link">⭐ Rewards</a></li>
+    <li><a href="parents.html" class="nav-link">Parents</a></li>
+  </ul>
+
+  <a href="level1.html" class="btn btn-primary btn-sm nav-btn">Start Learning! 🚀</a>
+
+  <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<nav class="nav-mobile" aria-label="Mobile navigation">
+  <a href="index.html" class="nav-link active">🏠 Home</a>
+  <a href="level1.html" class="nav-link">🌟 Level 1 — Ages 3–4</a>
+  <a href="level2.html" class="nav-link">🌱 Level 2 — Ages 5–6</a>
+  <a href="level3.html" class="nav-link">🏗️ Level 3 — Ages 7–8</a>
+  <a href="level4.html" class="nav-link">🗺️ Level 4 — Ages 9–10</a>
+  <a href="games.html" class="nav-link">🎮 Math Games</a>
+  <a href="rewards.html" class="nav-link">⭐ My Rewards</a>
+  <a href="parents.html" class="nav-link">👨‍👩‍👧 Parent Guide</a>
+  <a href="about.html" class="nav-link">📚 About Montessori</a>
+</nav>
+
+<!-- ===================================================
+     HERO SECTION
+=================================================== -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg-shapes" aria-hidden="true">
+    <div class="hero-shape hero-shape-1"></div>
+    <div class="hero-shape hero-shape-2"></div>
+    <div class="hero-shape hero-shape-3"></div>
+  </div>
+
+  <!-- Floating numbers background -->
+  <div class="floating-numbers" aria-hidden="true">
+    <span class="float-num">1</span><span class="float-num">2</span>
+    <span class="float-num">3</span><span class="float-num">4</span>
+    <span class="float-num">5</span><span class="float-num">6</span>
+    <span class="float-num">7</span><span class="float-num">8</span>
+    <span class="float-num">9</span><span class="float-num">10</span>
+  </div>
+
+  <div class="hero-content">
+    <!-- Hero Text -->
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Montessori-Inspired Learning
+      </div>
+
+      <h1 class="hero-title" id="hero-title">
+        Where Every Child<br>
+        <span class="highlight">Loves</span> to <span class="fun">Count!</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Explore numbers, count with colorful beads, solve fun puzzles, and build real math confidence — at your own pace, in your own way. 🌈
+      </p>
+
+      <div class="hero-actions">
+        <a href="level1.html" class="btn btn-primary btn-lg">
+          <span class="btn-icon">🚀</span> Start Your Adventure!
+        </a>
+        <a href="#levels" class="btn btn-secondary btn-lg">
+          <span class="btn-icon">✨</span> Choose Your Level
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">4</span>
+          <span class="hero-stat-label">Learning Levels</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">20+</span>
+          <span class="hero-stat-label">Activities</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">Ages<br>3–10</span>
+          <span class="hero-stat-label">For All Kids</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Visual: Mascot + Bubbles -->
+    <div class="hero-visual">
+      <div class="hero-mascot-container">
+        <div class="mascot-wrap">
+          <!-- Ollie the Owl SVG Mascot -->
+          <div class="mascot-speak-bubble">
+            Let's count together! 🎉
+          </div>
+
+          <svg class="hero-owl" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Ollie the Owl mascot">
+            <!-- Body -->
+            <ellipse cx="130" cy="155" rx="80" ry="90" fill="#F5A623"/>
+            <ellipse cx="130" cy="155" rx="75" ry="85" fill="#FFB84C"/>
+
+            <!-- Chest pattern -->
+            <ellipse cx="130" cy="160" rx="48" ry="58" fill="#FFF3D6"/>
+
+            <!-- Wings -->
+            <ellipse cx="62" cy="165" rx="32" ry="50" fill="#E8900A" transform="rotate(-15 62 165)"/>
+            <ellipse cx="198" cy="165" rx="32" ry="50" fill="#E8900A" transform="rotate(15 198 165)"/>
+
+            <!-- Wing feather details -->
+            <path d="M52 155 Q60 170 55 185" stroke="#D47800" stroke-width="2" stroke-linecap="round"/>
+            <path d="M60 150 Q68 165 63 180" stroke="#D47800" stroke-width="2" stroke-linecap="round"/>
+            <path d="M200 155 Q192 170 197 185" stroke="#D47800" stroke-width="2" stroke-linecap="round"/>
+            <path d="M192 150 Q184 165 189 180" stroke="#D47800" stroke-width="2" stroke-linecap="round"/>
+
+            <!-- Head -->
+            <circle cx="130" cy="95" r="68" fill="#FFB84C"/>
+            <circle cx="130" cy="95" r="64" fill="#FFB84C"/>
+
+            <!-- Ear tufts -->
+            <polygon points="92,38 80,18 108,32" fill="#E8900A"/>
+            <polygon points="168,38 180,18 152,32" fill="#E8900A"/>
+            <polygon points="95,35 83,20 107,30" fill="#FFB84C"/>
+            <polygon points="165,35 177,20 153,30" fill="#FFB84C"/>
+
+            <!-- Face plate -->
+            <ellipse cx="130" cy="100" rx="52" ry="46" fill="#FFF3D6"/>
+
+            <!-- Left eye -->
+            <circle cx="108" cy="90" r="22" fill="white"/>
+            <circle cx="108" cy="90" r="22" fill="white" stroke="#E8900A" stroke-width="3"/>
+            <circle cx="108" cy="90" r="16" fill="#4D96FF"/>
+            <circle cx="108" cy="90" r="10" fill="#1A2D5A"/>
+            <circle cx="113" cy="85" r="4" fill="white"/>
+            <circle cx="104" cy="93" r="2" fill="white" opacity="0.6"/>
+
+            <!-- Right eye -->
+            <circle cx="152" cy="90" r="22" fill="white"/>
+            <circle cx="152" cy="90" r="22" fill="white" stroke="#E8900A" stroke-width="3"/>
+            <circle cx="152" cy="90" r="16" fill="#4D96FF"/>
+            <circle cx="152" cy="90" r="10" fill="#1A2D5A"/>
+            <circle cx="157" cy="85" r="4" fill="white"/>
+            <circle cx="148" cy="93" r="2" fill="white" opacity="0.6"/>
+
+            <!-- Eyebrow accents (friendly expression) -->
+            <path d="M88 70 Q108 62 128 68" stroke="#E8900A" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M132 68 Q152 62 172 70" stroke="#E8900A" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+            <!-- Beak -->
+            <polygon points="130,108 118,126 142,126" fill="#FF8C00"/>
+            <polygon points="130,108 122,116 138,116" fill="#FFB300"/>
+            <!-- Beak line -->
+            <path d="M122,118 Q130,122 138,118" stroke="#E07800" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+            <!-- Blush cheeks -->
+            <ellipse cx="90" cy="108" rx="12" ry="8" fill="#FF8FAB" opacity="0.4"/>
+            <ellipse cx="170" cy="108" rx="12" ry="8" fill="#FF8FAB" opacity="0.4"/>
+
+            <!-- Feet -->
+            <ellipse cx="105" cy="238" rx="20" ry="12" fill="#FF8C00" transform="rotate(-10 105 238)"/>
+            <ellipse cx="155" cy="238" rx="20" ry="12" fill="#FF8C00" transform="rotate(10 155 238)"/>
+            <!-- Toes -->
+            <path d="M90,234 Q88,228 84,228" stroke="#E07800" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M98,232 Q96,225 92,224" stroke="#E07800" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M107,231 Q107,224 103,222" stroke="#E07800" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+            <path d="M140,231 Q140,224 144,222" stroke="#E07800" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M149,232 Q151,225 155,224" stroke="#E07800" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M157,234 Q159,228 163,228" stroke="#E07800" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+            <!-- Bow tie -->
+            <polygon points="115,200 130,210 115,220" fill="#FF6B6B"/>
+            <polygon points="145,200 130,210 145,220" fill="#FF6B6B"/>
+            <circle cx="130" cy="210" r="6" fill="#FF8FAB"/>
+
+            <!-- Belly spots -->
+            <circle cx="120" cy="170" r="4" fill="#FFE4A8" opacity="0.6"/>
+            <circle cx="140" cy="175" r="3" fill="#FFE4A8" opacity="0.6"/>
+            <circle cx="130" cy="185" r="5" fill="#FFE4A8" opacity="0.5"/>
+
+            <!-- Stars around head -->
+            <text x="42" y="52" font-size="18" fill="#FFD93D" opacity="0.8">✦</text>
+            <text x="205" y="48" font-size="22" fill="#FFD93D" opacity="0.9">★</text>
+            <text x="58" y="135" font-size="14" fill="#6BCB77" opacity="0.7">✦</text>
+            <text x="195" y="140" font-size="16" fill="#4D96FF" opacity="0.7">✦</text>
+          </svg>
+
+          <div class="mascot-shadow"></div>
+        </div>
+
+        <!-- Info bubbles around mascot -->
+        <div class="hero-bubbles" aria-hidden="true">
+          <div class="hero-bubble">⭐ 1 + 2 = 3!</div>
+          <div class="hero-bubble">🌈 Count with me!</div>
+          <div class="hero-bubble">🔢 123…</div>
+          <div class="hero-bubble">🌟 You did it!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     STATS BAR
+=================================================== -->
+<div class="stats-bar" aria-label="NumLand statistics">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Learning Levels</span>
+    </div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item">
+      <span class="stat-num">20+</span>
+      <span class="stat-label">Interactive Activities</span>
+    </div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item">
+      <span class="stat-num">Ages 3–10</span>
+      <span class="stat-label">Learning Progression</span>
+    </div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Fun & Learning</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     LEVEL SELECTION CARDS
+=================================================== -->
+<section class="levels-section" id="levels" aria-labelledby="levels-title">
+  <div class="section-header reveal">
+    <div class="section-tag yellow">🎓 Learning Levels</div>
+    <h2 class="section-title" id="levels-title">
+      Choose Your <span style="color:var(--coral)">Adventure!</span>
+    </h2>
+    <p class="section-subtitle">
+      Every child learns at their own pace. Pick the level that feels just right — you can always explore other levels too!
+    </p>
+  </div>
+
+  <div class="levels-grid">
+    <!-- Level 1 -->
+    <a href="level1.html" class="level-card level1 reveal" aria-label="Level 1: Number Discovery for ages 3-4">
+      <div class="level-card-icon" aria-hidden="true">🌟</div>
+      <span class="level-card-age">⭐ Ages 3 – 4</span>
+      <h3 class="level-card-title">Number Discovery</h3>
+      <p class="level-card-desc">Meet numbers 1–10, count colorful objects, and explore shapes and sizes in a magical world!</p>
+      <div class="level-card-topics">
+        <span class="level-topic">Numbers 1–10</span>
+        <span class="level-topic">Counting</span>
+        <span class="level-topic">Shapes</span>
+        <span class="level-topic">Sorting</span>
+        <span class="level-topic">Bead Counting</span>
+      </div>
+      <div class="level-card-cta">
+        <span class="level-card-cta-text">Start exploring!</span>
+        <div class="level-card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- Level 2 -->
+    <a href="level2.html" class="level-card level2 reveal" aria-label="Level 2: Early Math Explorers for ages 5-6">
+      <div class="level-card-icon" aria-hidden="true">🌱</div>
+      <span class="level-card-age">🌟 Ages 5 – 6</span>
+      <h3 class="level-card-title">Early Math Explorers</h3>
+      <p class="level-card-desc">Count to 50, compare numbers, add and subtract with fruit and animals, and spot patterns!</p>
+      <div class="level-card-topics">
+        <span class="level-topic">Numbers 1–50</span>
+        <span class="level-topic">Addition</span>
+        <span class="level-topic">Subtraction</span>
+        <span class="level-topic">Patterns</span>
+        <span class="level-topic">Comparing</span>
+      </div>
+      <div class="level-card-cta">
+        <span class="level-card-cta-text">Let's explore!</span>
+        <div class="level-card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- Level 3 -->
+    <a href="level3.html" class="level-card level3 reveal" aria-label="Level 3: Math Builders for ages 7-8">
+      <div class="level-card-icon" aria-hidden="true">🏗️</div>
+      <span class="level-card-age">🌟🌟 Ages 7 – 8</span>
+      <h3 class="level-card-title">Math Builders</h3>
+      <p class="level-card-desc">Build big numbers with place value blocks, skip count, tell time, and solve real-world word problems!</p>
+      <div class="level-card-topics">
+        <span class="level-topic">Place Value</span>
+        <span class="level-topic">Multiplication Intro</span>
+        <span class="level-topic">Skip Counting</span>
+        <span class="level-topic">Time & Money</span>
+        <span class="level-topic">Word Problems</span>
+      </div>
+      <div class="level-card-cta">
+        <span class="level-card-cta-text">Start building!</span>
+        <div class="level-card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- Level 4 -->
+    <a href="level4.html" class="level-card level4 reveal" aria-label="Level 4: Math Adventurers for ages 9-10">
+      <div class="level-card-icon" aria-hidden="true">🗺️</div>
+      <span class="level-card-age">🌟🌟🌟 Ages 9 – 10</span>
+      <h3 class="level-card-title">Math Adventurers</h3>
+      <p class="level-card-desc">Conquer multiplication, discover fractions with pizza, explore geometry, and solve clever puzzles!</p>
+      <div class="level-card-topics">
+        <span class="level-topic">Multiplication</span>
+        <span class="level-topic">Division</span>
+        <span class="level-topic">Fractions</span>
+        <span class="level-topic">Geometry</span>
+        <span class="level-topic">Logic Puzzles</span>
+      </div>
+      <div class="level-card-cta">
+        <span class="level-card-cta-text">Begin adventure!</span>
+        <div class="level-card-arrow">→</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ===================================================
+     INTERACTIVE PREVIEW
+=================================================== -->
+<section class="activities-preview section" aria-labelledby="preview-title">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag green">🎮 Try It Now</div>
+      <h2 class="section-title" id="preview-title">
+        Try a <span style="color:var(--green-dark)">Mini Activity</span> Right Here!
+      </h2>
+      <p class="section-subtitle">Get a taste of the fun learning waiting for you inside NumLand.</p>
+    </div>
+
+    <div class="activities-showcase">
+      <!-- Counter preview -->
+      <div class="activity-preview-card reveal">
+        <h3 class="activity-preview-title">🌟 Counting Stars</h3>
+        <p class="activity-preview-text">Click each star to count it! How many can you count?</p>
+        <div class="preview-counter">
+          <div class="preview-stars" id="preview-star-area" role="group" aria-label="Count these stars">
+            <span class="preview-star" role="button" tabindex="0" aria-label="Star 1">⭐</span>
+            <span class="preview-star" role="button" tabindex="0" aria-label="Star 2">⭐</span>
+            <span class="preview-star" role="button" tabindex="0" aria-label="Star 3">⭐</span>
+            <span class="preview-star" role="button" tabindex="0" aria-label="Star 4">⭐</span>
+            <span class="preview-star" role="button" tabindex="0" aria-label="Star 5">⭐</span>
+          </div>
+          <div class="preview-count" id="preview-count" aria-live="polite" aria-label="Count: 0">0</div>
+          <button class="btn btn-secondary btn-sm" onclick="resetPreview()">Reset ↺</button>
+        </div>
+      </div>
+
+      <!-- Number line preview -->
+      <div class="activity-preview-card green-theme reveal">
+        <h3 class="activity-preview-title">🔢 Number Line Hop!</h3>
+        <p class="activity-preview-text">Click any number to jump to it on the number line!</p>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+          <div class="num-line" role="group" aria-label="Number line 1 to 10">
+            <div class="num-line-item" data-num="1" onclick="numLineHop(this)" tabindex="0" role="button">1</div>
+            <div class="num-line-item" data-num="2" onclick="numLineHop(this)" tabindex="0" role="button">2</div>
+            <div class="num-line-item" data-num="3" onclick="numLineHop(this)" tabindex="0" role="button">3</div>
+            <div class="num-line-item" data-num="4" onclick="numLineHop(this)" tabindex="0" role="button">4</div>
+            <div class="num-line-item" data-num="5" onclick="numLineHop(this)" tabindex="0" role="button">5</div>
+            <div class="num-line-item" data-num="6" onclick="numLineHop(this)" tabindex="0" role="button">6</div>
+            <div class="num-line-item" data-num="7" onclick="numLineHop(this)" tabindex="0" role="button">7</div>
+            <div class="num-line-item" data-num="8" onclick="numLineHop(this)" tabindex="0" role="button">8</div>
+            <div class="num-line-item" data-num="9" onclick="numLineHop(this)" tabindex="0" role="button">9</div>
+            <div class="num-line-item" data-num="10" onclick="numLineHop(this)" tabindex="0" role="button">10</div>
+          </div>
+          <div id="num-line-msg" style="font-family:var(--font-fun);font-weight:700;font-size:1.1rem;color:var(--green-dark);min-height:32px;" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     MONTESSORI SECTION
+=================================================== -->
+<section class="montessori-section" aria-labelledby="montessori-title">
+  <div class="montessori-content">
+    <div class="montessori-text reveal">
+      <div class="section-tag">🌿 The Montessori Way</div>
+      <h2 class="section-title" id="montessori-title">Learning That <em>Feels</em> Like Play</h2>
+      <p>The Montessori approach believes that children learn best when they can explore at their own pace, using their hands and eyes — not just memorizing facts.</p>
+      <p>NumLand is built on these same principles: every activity lets children <strong>discover</strong> math concepts through interaction, visual materials, and joyful repetition.</p>
+      <a href="about.html" class="btn btn-outline-white" style="margin-top:16px;">Learn About Montessori →</a>
+    </div>
+
+    <div class="montessori-principles reveal">
+      <div class="principle-item">
+        <span class="principle-icon">🖐️</span>
+        <div class="principle-text">
+          <strong>Hands-On Learning</strong>
+          <span>Touch, drag, count, and build with virtual manipulatives</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <span class="principle-icon">🐢</span>
+        <div class="principle-text">
+          <strong>Self-Paced Discovery</strong>
+          <span>No timers, no pressure — children move at their own speed</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <span class="principle-icon">👀</span>
+        <div class="principle-text">
+          <strong>Visual Learning</strong>
+          <span>Numbers shown with beads, blocks, and real-world objects</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <span class="principle-icon">🌱</span>
+        <div class="principle-text">
+          <strong>Simple to Complex</strong>
+          <span>Concepts build gently from concrete to abstract</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <span class="principle-icon">❤️</span>
+        <div class="principle-text">
+          <strong>Gentle Encouragement</strong>
+          <span>Mistakes are welcomed as part of the learning journey</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <span class="principle-icon">🌍</span>
+        <div class="principle-text">
+          <strong>Real-World Connections</strong>
+          <span>Math through apples, clocks, coins, and everyday life</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     LEARNING PATH
+=================================================== -->
+<section class="learning-path" aria-labelledby="path-title">
+  <div class="section-header reveal">
+    <div class="section-tag blue">🗺️ Your Journey</div>
+    <h2 class="section-title" id="path-title">Your Math Learning Path</h2>
+    <p class="section-subtitle">Follow this path from first numbers all the way to math adventures!</p>
+  </div>
+
+  <div class="path-steps reveal">
+    <div class="path-step">
+      <div class="path-circle" aria-hidden="true">🌟</div>
+      <div class="path-title">Discover Numbers</div>
+      <div class="path-desc">Meet 1–10<br>Count & sort</div>
+    </div>
+    <div class="path-step">
+      <div class="path-circle" aria-hidden="true">🌱</div>
+      <div class="path-title">Explore Math</div>
+      <div class="path-desc">Add & subtract<br>Spot patterns</div>
+    </div>
+    <div class="path-step">
+      <div class="path-circle" aria-hidden="true">🏗️</div>
+      <div class="path-title">Build Skills</div>
+      <div class="path-desc">Place value<br>Skip count</div>
+    </div>
+    <div class="path-step">
+      <div class="path-circle" aria-hidden="true">🗺️</div>
+      <div class="path-title">Go on Adventures</div>
+      <div class="path-desc">Fractions & geometry<br>Math puzzles</div>
+    </div>
+    <div class="path-step">
+      <div class="path-circle" aria-hidden="true">🏆</div>
+      <div class="path-title">Earn Rewards</div>
+      <div class="path-desc">Stars, badges<br>& certificates!</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     FEATURES SECTION
+=================================================== -->
+<section class="features-section" aria-labelledby="features-title">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag coral">✨ Features</div>
+      <h2 class="section-title" id="features-title">Everything Children <span style="color:var(--coral)">Love</span></h2>
+      <p class="section-subtitle">Every feature is designed with children's joy and confidence in mind.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon yellow" aria-hidden="true">🎮</div>
+        <h3 class="feature-title">Interactive Games</h3>
+        <p class="feature-desc">Drag-and-drop counting, matching, sorting, and more — learning feels like playing!</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon green" aria-hidden="true">📿</div>
+        <h3 class="feature-title">Montessori Materials</h3>
+        <p class="feature-desc">Virtual bead rods, number tiles, place value blocks, and fraction circles just like the real thing.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon blue" aria-hidden="true">⭐</div>
+        <h3 class="feature-title">Stars & Rewards</h3>
+        <p class="feature-desc">Earn stars for every activity, collect badges, and grow a beautiful reward garden!</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon purple" aria-hidden="true">🎨</div>
+        <h3 class="feature-title">Colorful & Beautiful</h3>
+        <p class="feature-desc">Warm, cheerful colors and friendly illustrations create a safe and joyful learning environment.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon coral" aria-hidden="true">💬</div>
+        <h3 class="feature-title">Kind Feedback</h3>
+        <p class="feature-desc">Gentle encouragement when answers are wrong, and joyful celebration when they're right!</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon orange" aria-hidden="true">📱</div>
+        <h3 class="feature-title">Works Everywhere</h3>
+        <p class="feature-desc">Beautiful on tablets, phones, and computers. Big buttons make it easy for little fingers!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     REWARDS PREVIEW
+=================================================== -->
+<section class="rewards-preview section" aria-labelledby="rewards-title">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag yellow">🏆 Rewards</div>
+      <h2 class="section-title" id="rewards-title">Earn Amazing <span style="color:var(--yellow-dark)">Badges!</span></h2>
+      <p class="section-subtitle">Every star you earn brings you closer to a new badge. Collect them all!</p>
+    </div>
+
+    <div class="rewards-display reveal">
+      <div class="badge-card earned">
+        <span class="badge-icon">⭐</span>
+        <div class="badge-name">First Star</div>
+        <div class="badge-status earned">✓ Earned</div>
+      </div>
+      <div class="badge-card">
+        <span class="badge-icon">🌟</span>
+        <div class="badge-name">Star Collector</div>
+        <div class="badge-status">10 stars</div>
+      </div>
+      <div class="badge-card">
+        <span class="badge-icon">🔭</span>
+        <div class="badge-name">Explorer</div>
+        <div class="badge-status">5 activities</div>
+      </div>
+      <div class="badge-card">
+        <span class="badge-icon">🧮</span>
+        <div class="badge-name">Counter</div>
+        <div class="badge-status">Level 1 complete</div>
+      </div>
+      <div class="badge-card">
+        <span class="badge-icon">🌈</span>
+        <div class="badge-name">Rainbow Math</div>
+        <div class="badge-status">All levels tried</div>
+      </div>
+    </div>
+
+    <div class="text-center mt-lg">
+      <a href="rewards.html" class="btn btn-primary">See All Rewards 🏆</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     TESTIMONIALS
+=================================================== -->
+<section class="parents-preview" aria-labelledby="testimonials-title">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag purple">💬 What Families Say</div>
+      <h2 class="section-title" id="testimonials-title">Kids & Parents <span style="color:var(--purple-dark)">Love</span> NumLand!</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"My 4-year-old asks to do math every day now! She loves counting with the beads and gets so excited when she earns a star."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:#FFE082;">👩</div>
+          <div>
+            <div class="testimonial-name">Sarah M.</div>
+            <div class="testimonial-role">Mom of Emma, age 4</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"As a Montessori teacher, I'm impressed by how accurately it captures the hands-on learning approach. The place value blocks are wonderful!"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:#A5D6A7;">👨</div>
+          <div>
+            <div class="testimonial-name">David K.</div>
+            <div class="testimonial-role">Montessori Teacher</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"My son struggled with math anxiety. NumLand's gentle approach changed everything — he now says math is his favorite subject!"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:#CE93D8;">👩</div>
+          <div>
+            <div class="testimonial-name">Lisa T.</div>
+            <div class="testimonial-role">Mom of Jake, age 8</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-xl reveal">
+      <a href="parents.html" class="btn btn-secondary">Parent & Teacher Guide 📚</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     CTA SECTION
+=================================================== -->
+<section class="cta-section" aria-labelledby="cta-title">
+  <div class="section-inner">
+    <div class="section-tag" style="background:rgba(255,255,255,0.2);color:white;" aria-hidden="true">🚀 Get Started</div>
+    <h2 class="section-title" id="cta-title">Ready to Begin Your<br>Math Adventure?</h2>
+    <p>Choose your level and start learning with Ollie the Owl today! It's free, fun, and full of surprises. 🦉</p>
+    <div class="cta-buttons">
+      <a href="level1.html" class="btn btn-white btn-lg">
+        🌟 Start with Level 1
+      </a>
+      <a href="#levels" class="btn btn-outline-white btn-lg">
+        🎯 Choose My Level
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     FOOTER
+=================================================== -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="margin-bottom:16px;">
+          <div class="nav-logo-icon">🦉</div>
+          <span class="nav-logo-text">Num<span>Land</span></span>
+        </a>
+        <p>A Montessori-inspired math learning adventure for children ages 3–10. Discover the joy of numbers!</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Learning Levels</div>
+        <ul class="footer-links">
+          <li><a href="level1.html" class="footer-link">🌟 Level 1 — Ages 3–4</a></li>
+          <li><a href="level2.html" class="footer-link">🌱 Level 2 — Ages 5–6</a></li>
+          <li><a href="level3.html" class="footer-link">🏗️ Level 3 — Ages 7–8</a></li>
+          <li><a href="level4.html" class="footer-link">🗺️ Level 4 — Ages 9–10</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Explore</div>
+        <ul class="footer-links">
+          <li><a href="games.html" class="footer-link">🎮 Math Games</a></li>
+          <li><a href="rewards.html" class="footer-link">⭐ Rewards</a></li>
+          <li><a href="parents.html" class="footer-link">👨‍👩‍👧 Parent Guide</a></li>
+          <li><a href="about.html" class="footer-link">📚 About Montessori</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Learning Path</div>
+        <ul class="footer-links">
+          <li><a href="level1.html#counting" class="footer-link">Counting</a></li>
+          <li><a href="level2.html#addition" class="footer-link">Addition</a></li>
+          <li><a href="level3.html#place-value" class="footer-link">Place Value</a></li>
+          <li><a href="level4.html#fractions" class="footer-link">Fractions</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>Made with <span class="footer-hearts">❤️</span> for curious little minds</span>
+      <span>NumLand — Montessori Math for Kids</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+  // Preview Star Counter
+  let previewCount = 0;
+  const previewCountEl = document.getElementById('preview-count');
+  const previewStars = document.querySelectorAll('.preview-star');
+
+  previewStars.forEach((star, i) => {
+    star.addEventListener('click', function() {
+      if (this.classList.contains('lit')) return;
+      this.classList.add('lit');
+      previewCount++;
+      previewCountEl.textContent = previewCount;
+      previewCountEl.style.animation = 'none';
+      void previewCountEl.offsetWidth;
+      previewCountEl.style.animation = 'popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+      if (previewCount === 5) {
+        setTimeout(() => {
+          previewCountEl.textContent = '🎉';
+          previewCountEl.style.animation = 'starBurst 0.5s ease';
+        }, 300);
+      }
+    });
+    star.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+    });
+  });
+
+  function resetPreview() {
+    previewCount = 0;
+    previewCountEl.textContent = '0';
+    previewStars.forEach(s => s.classList.remove('lit'));
+  }
+
+  // Number Line
+  function numLineHop(el) {
+    document.querySelectorAll('.num-line-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    const num = el.dataset.num;
+    const messages = {
+      '1': 'One! 🌟', '2': 'Two! 🎉', '3': 'Three! ✨',
+      '4': 'Four! 🌈', '5': 'Five — halfway! ⭐',
+      '6': 'Six! 🎈', '7': 'Lucky Seven! 🍀',
+      '8': 'Eight! 🌺', '9': 'Almost ten! 😊',
+      '10': 'TEN! You made it! 🏆'
+    };
+    const msgEl = document.getElementById('num-line-msg');
+    if (msgEl) msgEl.textContent = messages[num] || num;
+  }
+</script>
+</body>
+</html>

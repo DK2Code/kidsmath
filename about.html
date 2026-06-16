@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About the Montessori Method | NumLand 📚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .about-main { max-width: 880px; margin: 0 auto; padding: var(--space-2xl) var(--space-xl); }
+    .quote-card {
+      background: var(--text-dark);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-card::before {
+      content: '"';
+      position: absolute; top: 0; left: 20px;
+      font-family: var(--font-display); font-size: 10rem; color: var(--yellow); opacity: 0.15; line-height: 1;
+    }
+    .quote-text {
+      font-family: var(--font-fun); font-weight: 700; font-size: 1.3rem;
+      color: rgba(255,255,255,0.95); line-height: 1.6; margin-bottom: 16px;
+      position: relative; z-index: 1; font-style: italic;
+    }
+    .quote-author {
+      font-size: 0.9rem; color: var(--yellow); font-weight: 700;
+      position: relative; z-index: 1;
+    }
+    .principle-cards {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+    @media (max-width: 600px) { .principle-cards { grid-template-columns: 1fr; } }
+    .principle-card {
+      background: white; border-radius: var(--radius-xl); padding: var(--space-xl);
+      box-shadow: var(--shadow-sm); border-top: 5px solid var(--yellow);
+      transition: transform var(--transition-normal);
+    }
+    .principle-card:hover { transform: translateY(-4px); }
+    .principle-card:nth-child(2) { border-top-color: var(--green); }
+    .principle-card:nth-child(3) { border-top-color: var(--blue); }
+    .principle-card:nth-child(4) { border-top-color: var(--purple); }
+    .principle-card:nth-child(5) { border-top-color: var(--coral); }
+    .principle-card:nth-child(6) { border-top-color: var(--orange); }
+    .pc-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+    .pc-title { font-family: var(--font-display); font-size: 1.15rem; color: var(--text-dark); margin-bottom: 8px; }
+    .pc-text { font-size: 0.88rem; color: var(--text-body); line-height: 1.7; }
+    .maria-section {
+      display: grid; grid-template-columns: auto 1fr; gap: var(--space-xl);
+      align-items: start; margin-bottom: var(--space-2xl);
+      background: var(--bg-cream); border-radius: var(--radius-xl); padding: var(--space-xl);
+      border: 2px solid var(--yellow-light);
+    }
+    @media (max-width: 600px) { .maria-section { grid-template-columns: 1fr; } }
+    .maria-portrait {
+      width: 140px; height: 140px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--yellow-light), var(--yellow));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; box-shadow: var(--shadow-card);
+      border: 5px solid white; flex-shrink: 0;
+    }
+    .numland-approach {
+      background: linear-gradient(135deg, #E8F0FF, #F3E8FF);
+      border-radius: var(--radius-xl); padding: var(--space-2xl);
+      margin-bottom: var(--space-2xl); border: 2px solid var(--blue-light);
+    }
+    .approach-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); margin-top: var(--space-lg);
+    }
+    @media (max-width: 700px) { .approach-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 400px) { .approach-grid { grid-template-columns: 1fr; } }
+    .approach-item {
+      background: white; border-radius: var(--radius-lg); padding: var(--space-md);
+      text-align: center; box-shadow: var(--shadow-sm);
+    }
+    .approach-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .approach-title { font-family: var(--font-fun); font-weight: 700; font-size: 0.85rem; color: var(--text-dark); }
+    .montessori-vs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-2xl);
+    }
+    @media (max-width: 600px) { .montessori-vs { grid-template-columns: 1fr; } }
+    .vs-column { border-radius: var(--radius-xl); padding: var(--space-xl); }
+    .vs-traditional { background: #FFF0F0; border: 2px solid var(--coral-light); }
+    .vs-montessori { background: #F0FFF4; border: 2px solid var(--green-light); }
+    .vs-title { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: var(--space-md); }
+    .vs-traditional .vs-title { color: var(--coral-dark); }
+    .vs-montessori .vs-title { color: var(--green-dark); }
+    .vs-list { list-style: none; }
+    .vs-list li { font-size: 0.85rem; color: var(--text-body); line-height: 1.8; padding-left: 22px; position: relative; }
+    .vs-traditional .vs-list li::before { content: '✗'; position: absolute; left: 0; color: var(--coral); }
+    .vs-montessori .vs-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green-dark); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🦉</div><span class="nav-logo-text">Num<span>Land</span></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-link">Home</a></li>
+    <li><a href="level1.html" class="nav-link">Level 1</a></li>
+    <li><a href="level2.html" class="nav-link">Level 2</a></li>
+    <li><a href="level3.html" class="nav-link">Level 3</a></li>
+    <li><a href="level4.html" class="nav-link">Level 4</a></li>
+    <li><a href="parents.html" class="nav-link">Parents</a></li>
+    <li><a href="about.html" class="nav-link active">About</a></li>
+  </ul>
+  <a href="level1.html" class="btn btn-primary btn-sm nav-btn">Start Learning 🚀</a>
+  <button class="nav-hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="nav-mobile">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="parents.html" class="nav-link">👨‍👩‍👧 Parent Guide</a>
+  <a href="about.html" class="nav-link active">📚 About Montessori</a>
+</nav>
+
+<header class="page-header" style="background:linear-gradient(160deg,#FFF8E1,#E8F8EA);">
+  <div class="breadcrumb"><a href="index.html">🏠 Home</a> <span>›</span> About Montessori</div>
+  <h1 class="page-header-title">📚 The Montessori Method</h1>
+  <p class="page-header-sub">Discover the beautiful philosophy behind how NumLand helps children learn math — through wonder, exploration, and joy.</p>
+</header>
+
+<main class="about-main">
+
+  <!-- Maria Montessori quote -->
+  <div class="quote-card reveal">
+    <div class="quote-text">"The greatest sign of success for a teacher is to be able to say, 'The children are now working as if I did not exist.'"</div>
+    <div class="quote-author">— Dr. Maria Montessori</div>
+  </div>
+
+  <!-- Who was Maria Montessori -->
+  <div class="guide-section">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-lg);">👩‍🔬 Who was Maria Montessori?</h2>
+
+    <div class="maria-section reveal">
+      <div class="maria-portrait" aria-hidden="true">👩‍🔬</div>
+      <div>
+        <p>Maria Montessori (1870–1952) was an Italian physician, educator, and innovator. She was one of the first women to graduate from the University of Rome School of Medicine — remarkable for her time!</p>
+        <p>She began by working with children who were considered "uneducable." Through careful observation, she discovered something revolutionary: when given the right environment and materials, children naturally want to learn. They are inherently curious, capable, and self-directed.</p>
+        <p>Her first school, the <em>Casa dei Bambini</em> (Children's House), opened in Rome in 1907. The results were extraordinary — children were reading, writing, and doing math far beyond what anyone expected. The Montessori method was born.</p>
+        <p>Today, over 22,000 Montessori schools exist in more than 110 countries. And now, the same principles inspire digital learning experiences like NumLand!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Principles -->
+  <div class="guide-section">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-sm);">🌿 The Core Montessori Principles</h2>
+    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:var(--space-lg);">These six principles guide every aspect of Montessori education — and they guide NumLand too.</p>
+
+    <div class="principle-cards">
+      <div class="principle-card reveal">
+        <span class="pc-icon">🖐️</span>
+        <div class="pc-title">Hands-On Learning</div>
+        <div class="pc-text">Children learn best by touching, manipulating, and interacting with materials. Abstract concepts like numbers become concrete when children count real beads, build with blocks, and sort objects. NumLand recreates this with interactive digital manipulatives.</div>
+      </div>
+      <div class="principle-card reveal">
+        <span class="pc-icon">🐢</span>
+        <div class="pc-title">Self-Paced Discovery</div>
+        <div class="pc-text">Every child has their own internal timeline. Montessori environments remove external pressure and let children move at their natural pace. NumLand has no timers, no forced progression — only open exploration and gentle encouragement.</div>
+      </div>
+      <div class="principle-card reveal">
+        <span class="pc-icon">🌱</span>
+        <div class="pc-title">From Concrete to Abstract</div>
+        <div class="pc-text">Montessori math begins with physical objects (beads, tiles, rods) before moving to symbols and numbers. Children understand "5" because they've held 5 beads, not because they memorized a symbol. NumLand follows this progression in every level.</div>
+      </div>
+      <div class="principle-card reveal">
+        <span class="pc-icon">🔍</span>
+        <div class="pc-title">Prepared Environment</div>
+        <div class="pc-text">The physical and emotional environment matters enormously. Montessori classrooms are calm, beautiful, ordered, and filled with inviting materials. NumLand's warm colors, clear layout, and friendly mascot Ollie create a similarly safe and inviting digital space.</div>
+      </div>
+      <div class="principle-card reveal">
+        <span class="pc-icon">🔄</span>
+        <div class="pc-title">Repetition and Mastery</div>
+        <div class="pc-text">A child who repeats an activity isn't bored — they're building mastery. Montessori recognizes that deep learning requires returning to the same concept many times from different angles. NumLand activities can be repeated as many times as a child wishes.</div>
+      </div>
+      <div class="principle-card reveal">
+        <span class="pc-icon">🌍</span>
+        <div class="pc-title">Real-World Connections</div>
+        <div class="pc-text">Montessori always connects learning to life. Fractions are pizza slices and cake pieces. Counting is apples and fingers. Time is reading a real clock. NumLand uses familiar real-world objects throughout to make math meaningful and memorable.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Traditional vs Montessori -->
+  <div class="guide-section">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-lg);">⚖️ Traditional vs. Montessori Math</h2>
+
+    <div class="montessori-vs">
+      <div class="vs-column vs-traditional reveal">
+        <div class="vs-title">Traditional Approach</div>
+        <ul class="vs-list">
+          <li>Memorize times tables by rote</li>
+          <li>Follow the same pace as the class</li>
+          <li>Right or wrong — graded immediately</li>
+          <li>Teacher-centered instruction</li>
+          <li>Abstract symbols before understanding</li>
+          <li>Math is separate from real life</li>
+          <li>Mistakes are failures</li>
+        </ul>
+      </div>
+      <div class="vs-column vs-montessori reveal">
+        <div class="vs-title">Montessori Approach 🌱</div>
+        <ul class="vs-list">
+          <li>Understand multiplication through patterns</li>
+          <li>Each child follows their own timeline</li>
+          <li>Explore and self-correct with materials</li>
+          <li>Child-centered, teacher as guide</li>
+          <li>Concrete objects before abstract symbols</li>
+          <li>Math is woven through everyday life</li>
+          <li>Mistakes are stepping stones</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- How NumLand applies it -->
+  <div class="numland-approach reveal">
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--text-dark);margin-bottom:var(--space-sm);">🦉 How NumLand Applies Montessori</h2>
+    <p style="font-size:0.9rem;color:var(--text-body);margin-bottom:var(--space-md);">Every design decision on NumLand was made with Montessori principles in mind. Here's how you'll see them in practice:</p>
+
+    <div class="approach-grid">
+      <div class="approach-item">
+        <span class="approach-icon">📿</span>
+        <div class="approach-title">Virtual Bead Chains</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">🧱</span>
+        <div class="approach-title">Place Value Blocks</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">🍕</span>
+        <div class="approach-title">Fraction Pizza Circles</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">🎯</span>
+        <div class="approach-title">Matching & Sorting</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">🖱️</span>
+        <div class="approach-title">Drag-Drop Activities</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">💬</span>
+        <div class="approach-title">Kind, Patient Feedback</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">🔢</span>
+        <div class="approach-title">Number Cards & Tiles</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">⏰</span>
+        <div class="approach-title">Real Clock Reading</div>
+      </div>
+      <div class="approach-item">
+        <span class="approach-icon">🌱</span>
+        <div class="approach-title">Garden Growth Rewards</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second quote -->
+  <div class="quote-card reveal" style="background:linear-gradient(135deg,#1A3A5C,#2D1B00);">
+    <div class="quote-text">"Play is the work of the child."</div>
+    <div class="quote-author">— Dr. Maria Montessori</div>
+  </div>
+
+  <!-- CTA -->
+  <div style="text-align:center;padding:var(--space-xl);background:linear-gradient(135deg,var(--yellow-light),var(--green-light));border-radius:var(--radius-xl);border:2px solid var(--yellow);margin-bottom:var(--space-xl);">
+    <h2 style="font-family:var(--font-display);font-size:1.6rem;color:var(--text-dark);margin-bottom:12px;">Experience Montessori Math Now!</h2>
+    <p style="font-size:0.92rem;color:var(--text-body);margin-bottom:var(--space-lg);">The best way to understand the Montessori method is to experience it. Explore NumLand with your child and see the joy of discovery in action!</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+      <a href="level1.html" class="btn btn-primary">🌟 Start Learning!</a>
+      <a href="parents.html" class="btn btn-secondary">👨‍👩‍👧 Parent Guide</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom" style="flex-direction:column;gap:8px;text-align:center;">
+      <a href="index.html" class="nav-logo" style="justify-content:center;">
+        <div class="nav-logo-icon">🦉</div>
+        <span class="nav-logo-text" style="color:rgba(255,255,255,0.8);">Num<span>Land</span></span>
+      </a>
+      <span>Made with <span style="color:var(--coral);">❤️</span> for curious little minds</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
