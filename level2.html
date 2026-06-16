@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=2" />
   <style>
     .activity-tab.active { background: var(--green); border-color: var(--green-dark); color: white; }
 
@@ -90,22 +90,6 @@
       flex-wrap: wrap;
       margin-top: var(--space-md);
     }
-
-    .welcome-level2 {
-      background: linear-gradient(135deg, var(--green-light), #D0F5D8);
-      border: 2px solid var(--green);
-      border-radius: var(--radius-xl);
-      display: flex;
-      align-items: center;
-      gap: var(--space-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-card);
-      flex-wrap: wrap;
-    }
-
-    .welcome-level2 .level-welcome-text {
-      flex: 1 1 280px;
-    }
   </style>
 </head>
 <body>
@@ -155,7 +139,7 @@
 <main class="activity-container">
 
   <!-- Welcome Banner -->
-  <div class="level-welcome welcome-level2 reveal" style="background:linear-gradient(135deg,var(--green-light),#D0F5D8);border:2px solid var(--green);">
+  <div class="level-welcome reveal" style="background:linear-gradient(135deg,var(--green-light),#D0F5D8);border:2px solid var(--green);">
     <div class="level-welcome-icon">🦉</div>
     <div class="level-welcome-text">
       <h2>Welcome, Explorer! 🌱</h2>

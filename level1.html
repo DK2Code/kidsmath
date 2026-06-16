@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=2" />
   <style>
     :root {
       --level-color: var(--yellow);
@@ -189,38 +189,6 @@
 
     .trace-num-btn:hover { transform: scale(1.1); border-color: var(--yellow); background: var(--yellow-light); }
     .trace-num-btn.active { background: var(--yellow); border-color: var(--yellow-dark); transform: scale(1.1); }
-
-    /* Welcome mascot banner */
-    .level-welcome {
-      background: linear-gradient(135deg, var(--yellow-light), #FFF0CC);
-      border-radius: var(--radius-xl);
-      padding: var(--space-xl);
-      display: flex;
-      align-items: center;
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-      box-shadow: var(--shadow-sm);
-      border: 2px solid var(--yellow);
-    }
-
-    .level-welcome-icon {
-      font-size: 4rem;
-      flex-shrink: 0;
-      animation: wiggle 4s ease-in-out infinite;
-    }
-
-    .level-welcome-text h2 {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      color: var(--text-dark);
-      margin-bottom: 4px;
-    }
-
-    .level-welcome-text p {
-      font-size: 0.92rem;
-      color: var(--text-body);
-      line-height: 1.6;
-    }
   </style>
 </head>
 <body>
@@ -274,7 +242,7 @@
 <main class="activity-container" id="main-content">
 
   <!-- Welcome Banner -->
-  <div class="level-welcome reveal">
+  <div class="level-welcome reveal" style="background:linear-gradient(135deg,var(--yellow-light),#FFF0CC);border:2px solid var(--yellow);">
     <div class="level-welcome-icon">🦉</div>
     <div class="level-welcome-text">
       <h2>Hi there, Explorer! 👋</h2>

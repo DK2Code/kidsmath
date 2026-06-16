@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=2" />
   <style>
     .activity-tab.active { background: var(--purple); border-color: var(--purple-dark); color: white; }
 
@@ -173,49 +173,6 @@
 
     .puzzle-cell:hover:not(.given) { transform:scale(1.05); border-color:var(--purple); }
     .puzzle-cell.given { background:var(--purple-light); cursor:default; }
-
-    .level-welcome {
-      border-radius: var(--radius-xl);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: var(--space-md);
-      margin-bottom: var(--space-xl);
-      box-shadow: var(--shadow-card);
-    }
-
-    .level-welcome-icon {
-      font-size: 4rem;
-      flex-shrink: 0;
-      animation: wiggle 4s ease-in-out infinite;
-    }
-
-    .level-welcome-text {
-      max-width: 640px;
-      min-width: 0;
-    }
-
-    .level-welcome-text h2 {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      color: var(--text-dark);
-      margin-bottom: 4px;
-    }
-
-    .level-welcome-text p {
-      font-size: 0.92rem;
-      color: var(--text-body);
-      line-height: 1.6;
-    }
-
-    @media (max-width: 600px) {
-      .level-welcome {
-        padding: var(--space-lg);
-      }
-    }
   </style>
 </head>
 <body>
