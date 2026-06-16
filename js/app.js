@@ -377,9 +377,10 @@ const initNumberMatch = (containerId) => {
   const shuffled = [...chosen].sort(() => Math.random() - 0.5);
   const shuffledItems = [...chosen].sort(() => Math.random() - 0.5);
 
-  const numCol = container.querySelector('.match-numbers');
-  const itemCol = container.querySelector('.match-items');
-  const feedback = container.querySelector('.feedback');
+  // Accept both class-based and id-based columns so Level 1 markup stays compatible.
+  const numCol = container.querySelector('.match-numbers') || container.querySelector('#match-numbers');
+  const itemCol = container.querySelector('.match-items') || container.querySelector('#match-items');
+  const feedback = container.querySelector('.feedback') || document.getElementById('matching-feedback');
 
   if (!numCol || !itemCol) return;
 
@@ -448,12 +449,14 @@ const initNumberMatch = (containerId) => {
           }, 400);
         }
       } else {
-        selectedNum.el.classList.remove('selected');
-        selectedNum.el.classList.add('wrong');
-        selectedItem.el.classList.add('wrong');
+        const wrongNumEl = selectedNum.el;
+        const wrongItemEl = selectedItem.el;
+        wrongNumEl.classList.remove('selected');
+        wrongNumEl.classList.add('wrong');
+        wrongItemEl.classList.add('wrong');
         setTimeout(() => {
-          selectedNum.el.classList.remove('wrong');
-          selectedItem.el.classList.remove('wrong');
+          wrongNumEl.classList.remove('wrong');
+          wrongItemEl.classList.remove('wrong');
         }, 600);
         if (feedback) {
           feedback.className = 'feedback show error';
